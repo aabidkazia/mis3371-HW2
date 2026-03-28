@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+  ================================================================
+  Program name:   thankyou.html  (Homework 2)
+  Author:         Student Name
+  Date created:   March 27, 2026
+  Date last edited: March 27, 2026
+  Version:        2.0
+  Description:    Confirmation page after successful patient form
+                  submission. Uses same banner, footer, and CSS.
+  ================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We'R'Docs Medical &ndash; Submission Confirmed</title>
+  <link href="style.css" rel="stylesheet">
+  <style>
+    .ty-card { text-align:center; padding:50px 30px; }
+    .check-circle {
+      width:80px; height:80px; background:#0ea47a; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 22px; font-size:2.4rem; color:#fff;
+      box-shadow:0 4px 16px rgba(14,164,122,.35);
+    }
+    .ty-card h2 { font-size:1.65rem; color:#0ea47a; border:none; margin-bottom:14px; }
+    .ty-card p  { font-size:1rem; color:#1b2c47; margin-bottom:10px; line-height:1.7; }
+    .back-btn {
+      display:inline-block; margin-top:28px; padding:10px 26px;
+      background:#1a56db; color:#fff !important; border-radius:5px;
+      font-family:'Palatino Linotype',serif; font-weight:bold;
+      text-decoration:none !important; transition:background .18s;
+    }
+    .back-btn:hover { background:#1040b0 !important; }
+  </style>
+</head>
+<body>
+<div id="banner">
+  <div id="banner-logo">
+    <svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="36" cy="36" r="34" fill="#1a56db" stroke="#fff" stroke-width="3"/>
+      <rect x="29" y="14" width="14" height="44" rx="5" fill="#fff"/>
+      <rect x="14" y="29" width="44" height="14" rx="5" fill="#fff"/>
+    </svg>
+  </div>
+  <div id="banner-text">
+    <h1>We&#39;R&#39;Docs Medical Center</h1>
+    <p id="dynamic-date"></p>
+    <p id="banner-tagline">Caring for You &mdash; Body, Mind &amp; Spirit</p>
+  </div>
+</div>
+
+<div id="page-wrapper" style="display:block; max-width:700px; margin:30px auto;">
+  <div id="main-content">
+    <div class="ty-card">
+      <div class="check-circle">&#10004;</div>
+      <h2>Thank You for Your Registration!</h2>
+      <p>Your new patient information has been received successfully.<br>
+         A member of our team will contact you shortly to confirm<br>
+         your appointment and next steps.</p>
+      <p>For urgent questions call <strong>(713) 555-9100</strong>.<br>
+         For emergencies, always call <strong>911</strong>.</p>
+      <a href="patient-form.html" class="back-btn">&larr; Return to Registration Form</a>
+    </div>
+  </div>
+</div>
+
+<div id="footer">
+  <div id="footer-left">
+    <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="15" cy="15" r="14" fill="#1a56db"/>
+      <rect x="11" y="4" width="8" height="22" rx="3" fill="#fff"/>
+      <rect x="4" y="11" width="22" height="8" rx="3" fill="#fff"/>
+    </svg>
+    <span class="footer-brand">We&#39;R&#39;Docs Medical</span>
+  </div>
+  <div id="footer-center">
+    <button type="button" id="btn-contact"
+            onclick="alert('Phone: (713) 555-9100\nFor emergencies call 911');">
+      &#128222; Contact Us
+    </button>
+    <div id="social-links">
+      <a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook</a>
+      <span class="sep">|</span>
+      <a href="https://www.twitter.com" target="_blank" rel="noopener">Twitter / X</a>
+    </div>
+  </div>
+  <div id="footer-right">
+    PO BOX 18881<br>Sugar Land, TX &nbsp;77496<br>
+    &copy; <span id="footer-year"></span> We&#39;R&#39;Docs Medical Center.
+  </div>
+</div>
+
+<script>
+  (function(){
+    var days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var now=new Date(), d=now.getDate();
+    var sfx=(d===1||d===21||d===31)?"st":(d===2||d===22)?"nd":(d===3||d===23)?"rd":"th";
+    document.getElementById("dynamic-date").innerHTML=
+      "Today is: <strong>"+days[now.getDay()]+", "+months[now.getMonth()]+" "+d+sfx+", "+now.getFullYear()+"</strong>";
+    document.getElementById("footer-year").textContent=now.getFullYear();
+  })();
+</script>
+<!-- END OF DOCUMENT: thankyou.html (HW2) -->
+</body>
+</html>
