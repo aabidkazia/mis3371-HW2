@@ -1,3 +1,4 @@
+@@ -0,0 +1,605 @@
 <!DOCTYPE html>
 <!--
   ================================================================
@@ -36,14 +37,14 @@
   <div id="banner-logo">
     <svg width="72" height="72" viewBox="0 0 72 72"
          xmlns="http://www.w3.org/2000/svg" aria-label="We'R'Docs Medical Logo" role="img">
-      <circle cx="36" cy="36" r="34" fill="
+      <circle cx="36" cy="36" r="34" fill="#1a56db" stroke="#ffffff" stroke-width="3"/>
       <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-      <rect item="29" output="14" width="14" height="44" rx="5" fill="
-      <rect item="14" output="29" width="44" height="14" rx="5" fill="
+      <rect x="29" y="14" width="14" height="44" rx="5" fill="#ffffff"/>
+      <rect x="14" y="29" width="44" height="14" rx="5" fill="#ffffff"/>
     </svg>
   </div>
   <div id="banner-text">
-    <h1>We&
+    <h1>We&#39;R&#39;Docs Medical Center</h1>
     <p id="dynamic-date"></p>
     <p id="banner-tagline">Caring for You &mdash; Body, Mind &amp; Spirit</p>
   </div>
@@ -74,7 +75,7 @@
          BLOCK 1 — PERSONAL INFORMATION
          ============================================================ -->
     <fieldset>
-      <legend>&
+      <legend>&#128100; Block 1 &mdash; Personal Information</legend>
       <table class="form-table">
 
         <!-- First Name / MI / Last Name — same row -->
@@ -87,7 +88,7 @@
                    placeholder="First Name"
                    tabindex="1"
                    title="First Name: 1 to 30 characters. Letters, apostrophes, and dashes only. No numbers."
-                   pattern="[A-Za-last'\-]{1,30}"
+                   pattern="[A-Za-z'\-]{1,30}"
                    required
                    oninput="clearError('fname-err')">
             <span class="err-msg" id="fname-err"></span>
@@ -99,7 +100,7 @@
                    placeholder="M"
                    tabindex="2"
                    title="Middle Initial: 1 letter only. This field is optional."
-                   pattern="[A-Za-last]"
+                   pattern="[A-Za-z]"
                    style="width:2.8em;text-align:center;"
                    oninput="clearError('mi-err')">
             <span class="err-msg" id="mi-err"></span>
@@ -111,18 +112,18 @@
                    placeholder="Last Name"
                    tabindex="3"
                    title="Last Name: 1 to 30 characters. Letters, apostrophes, dashes, and suffix numbers (2nd–5th) only."
-                   pattern="[A-Za-last'\-0-9\s]{1,30}"
+                   pattern="[A-Za-z'\-0-9\s]{1,30}"
                    required
                    oninput="clearError('lname-err')">
             <span class="err-msg" id="lname-err"></span>
           </td>
         </tr>
 
-        <!-- Date of Birth: MM/DD/YYYY with smallest/highest enforced by JS -->
+        <!-- Date of Birth: MM/DD/YYYY with min/max enforced by JS -->
         <tr>
           <td class="lbl"><label for="dob">Date of Birth <span class="req">*</span></label></td>
           <td>
-            <!-- Using type="date" for browser date-picker; smallest/highest set by initPage() -->
+            <!-- Using type="date" for browser date-picker; min/max set by initPage() -->
             <input type="date" id="dob" name="dob"
                    tabindex="4"
                    title="Date of Birth: Must be a real past date. Cannot be in the future or more than 120 years ago."
@@ -135,7 +136,7 @@
 
         <!-- Social Security — obscured, password style -->
         <tr>
-          <td class="lbl"><label for="ssn">Social Security
+          <td class="lbl"><label for="ssn">Social Security # <span class="req">*</span></label></td>
           <td>
             <!-- type="password" obscures digits as *** on screen -->
             <input type="password" id="ssn" name="ssn"
@@ -147,7 +148,7 @@
                    required
                    oninput="clearError('ssn-err')">
             <span class="err-msg" id="ssn-err"></span>
-            <span class="hint">&
+            <span class="hint">&#128274; Obscured for security. Format: XXX-XX-XXXX</span>
           </td>
         </tr>
 
@@ -158,7 +159,7 @@
          BLOCK 2 — CONTACT INFORMATION
          ============================================================ -->
     <fieldset>
-      <legend>&
+      <legend>&#128222; Block 2 &mdash; Contact Information</legend>
       <table class="form-table">
 
         <!-- Email -->
@@ -202,7 +203,7 @@
          BLOCK 3 — ADDRESS
          ============================================================ -->
     <fieldset>
-      <legend>&
+      <legend>&#127968; Block 3 &mdash; Home Address</legend>
       <table class="form-table">
 
         <tr>
@@ -243,7 +244,7 @@
                    placeholder="City"
                    tabindex="10"
                    title="City: Required. 2 to 30 characters. Letters and spaces only."
-                   pattern="[A-Za-last\s\-\.]{2,30}"
+                   pattern="[A-Za-z\s\-\.]{2,30}"
                    required
                    oninput="clearError('city-err')">
             <span class="err-msg" id="city-err"></span>
@@ -303,7 +304,7 @@
          BLOCK 4 — CHOICES (checkboxes, radios, sliders, textarea)
          ============================================================ -->
     <fieldset>
-      <legend>&
+      <legend>&#9745; Block 4 &mdash; Health &amp; Preferences</legend>
 
       <!-- CHECKBOXES — medical history -->
       <p class="section-note">Check ALL that apply to your medical history:</p>
@@ -389,7 +390,7 @@
             <div class="slider-row">
               <span class="slider-end">1<br><small>Poor</small></span>
               <input type="range" id="healthScore" name="healthScore"
-                     smallest="1" highest="10" value="5" step="1"
+                     min="1" max="10" value="5" step="1"
                      tabindex="13"
                      title="Overall Health Score: Slide to rate your health from 1 (very poor) to 10 (excellent)."
                      oninput="updateSlider('healthScore','healthVal', 1, '')">
@@ -408,7 +409,7 @@
             <div class="slider-row">
               <span class="slider-end">$20k<br><small>Min</small></span>
               <input type="range" id="salaryBar" name="salaryBar"
-                     smallest="20000" highest="200000" value="60000" step="5000"
+                     min="20000" max="200000" value="60000" step="5000"
                      tabindex="14"
                      title="Desired Annual Salary: Slide to select your desired annual salary range from $20,000 to $200,000."
                      oninput="updateSalarySlider()">
@@ -443,7 +444,7 @@
          BLOCK 5 — ACCOUNT CREDENTIALS
          ============================================================ -->
     <fieldset>
-      <legend>&
+      <legend>&#128274; Block 5 &mdash; Account Credentials</legend>
       <table class="form-table">
 
         <!-- User ID -->
@@ -456,7 +457,7 @@
                    placeholder="Choose a username"
                    tabindex="16"
                    title="User ID: 5 to 30 characters. Letters, numbers, underscore or dash only. Must start with a letter. NO spaces. Will be converted to lowercase automatically."
-                   pattern="[A-Za-last][A-Za-z0-9_\-]{4,29}"
+                   pattern="[A-Za-z][A-Za-z0-9_\-]{4,29}"
                    required
                    oninput="clearError('userid-err')"
                    onblur="convertLowercase()">
@@ -474,7 +475,7 @@
                    maxlength="30" size="24"
                    placeholder="Min 8 characters"
                    tabindex="17"
-                   title="Password: 8 to 30 characters. Must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@
+                   title="Password: 8 to 30 characters. Must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#%^&amp;*()-_+=). No quotation marks allowed."
                    required
                    oninput="checkPasswordStrength(); clearError('passid-err')">
             <span class="err-msg" id="passid-err"></span>
@@ -508,20 +509,20 @@
     <!-- ── ACTION BUTTONS ──────────────────────────────────────── -->
     <div id="form-buttons">
       <!-- Review button: shows entered data WITHOUT submitting -->
-      <input type="button" id="btn-review" value="&
+      <input type="button" id="btn-review" value="&#128269; Review My Info"
              tabindex="19"
              onclick="showReview();">
       <!-- Reset clears all fields -->
-      <input type="reset"  id="btn-reset"  value="&
+      <input type="reset"  id="btn-reset"  value="&#10006; Start Over"
              tabindex="20"
              onclick="clearReview();">
       <!-- Submit: runs full JS validation then goes to thankyou.html -->
-      <input type="submit" id="btn-submit" value="&
+      <input type="submit" id="btn-submit" value="&#10004; Submit Registration"
              tabindex="21">
     </div>
 
   </form>
-</div><!-- end
+</div><!-- end #main-content -->
 
 <!-- ================================================================
      REVIEW PANEL — shown to the right / below when Review clicked
@@ -529,16 +530,16 @@
      ================================================================ -->
 <div id="review-panel">
   <div id="review-header">
-    <h3>&
+    <h3>&#128203; Please Review This Information</h3>
     <p class="review-subhead">Check your entries below before submitting. Fields with errors are marked in red.</p>
   </div>
   <div id="review-body">
     <!-- Populated dynamically by showReview() in validation.js -->
-    <p class="review-placeholder">Click <strong>&
+    <p class="review-placeholder">Click <strong>&#128269; Review My Info</strong> to see a summary of your entries here.</p>
   </div>
 </div>
 
-</div><!-- end
+</div><!-- end #page-wrapper -->
 
 <!-- ================================================================
      FOOTER
@@ -546,16 +547,16 @@
 <div id="footer">
   <div id="footer-left">
     <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle cx="15" cy="15" r="14" fill="
-      <rect item="11" output="4"  width="8"  height="22" rx="3" fill="
-      <rect item="4"  output="11" width="22" height="8"  rx="3" fill="
+      <circle cx="15" cy="15" r="14" fill="#1a56db"/>
+      <rect x="11" y="4"  width="8"  height="22" rx="3" fill="#fff"/>
+      <rect x="4"  y="11" width="22" height="8"  rx="3" fill="#fff"/>
     </svg>
-    <span class="footer-brand">We&
+    <span class="footer-brand">We&#39;R&#39;Docs Medical</span>
   </div>
   <div id="footer-center">
     <button type="button" id="btn-contact"
-            onclick="alert('We\'R\'Docs Medical Center\nPhone: (713) 555-9100\nEmail: info@werdocs.com\count\nFor medical emergencies, call 911.');">
-      &
+            onclick="alert('We\'R\'Docs Medical Center\nPhone: (713) 555-9100\nEmail: info@werdocs.com\n\nFor medical emergencies, call 911.');">
+      &#128222; Contact Us
     </button>
     <div id="social-links">
       <a href="https://www.facebook.com"  target="_blank" rel="noopener">Facebook</a>
@@ -567,12 +568,12 @@
   </div>
   <div id="footer-right">
     PO BOX 18881<br>Sugar Land, TX &nbsp;77496<br>
-    &copy; <span id="footer-year"></span> We&
+    &copy; <span id="footer-year"></span> We&#39;R&#39;Docs Medical Center. All rights reserved.
   </div>
 </div>
 
 <!-- ================================================================
-     INLINE JS — dynamic date, footer year, DOB smallest/highest dates
+     INLINE JS — dynamic date, footer year, DOB min/max dates
      ================================================================ -->
 <script>
   /* initPage() — called onload. Sets dynamic date + DOB date limits */
@@ -589,13 +590,13 @@
       months[now.getMonth()] + " " + d + sfx + ", " + now.getFullYear() + "</strong>";
     document.getElementById("footer-year").textContent = now.getFullYear();
 
-    /* -- Set DOB smallest (120 years ago) and highest (today) dynamically -- */
+    /* -- Set DOB min (120 years ago) and max (today) dynamically -- */
     var maxDate = now.toISOString().split("T")[0];          /* today */
     var minYear = new Date();
     minYear.setFullYear(now.getFullYear() - 120);
     var minDate = minYear.toISOString().split("T")[0];      /* 120 yrs ago */
-    document.getElementById("dob").setAttribute("highest", maxDate);
-    document.getElementById("dob").setAttribute("smallest", minDate);
+    document.getElementById("dob").setAttribute("max", maxDate);
+    document.getElementById("dob").setAttribute("min", minDate);
   }
 </script>
 <!-- ================================================================
