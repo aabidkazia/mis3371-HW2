@@ -1,3 +1,4 @@
+@@ -0,0 +1,549 @@
 /*
   ================================================================
   Program name:   validation.js  (Homework 2)
@@ -55,7 +56,7 @@ function showError(errId, message) {
 function clearReview() {
   var body = document.getElementById("review-body");
   if (body) {
-    body.innerHTML = '<p class="review-placeholder">Click <strong>&
+    body.innerHTML = '<p class="review-placeholder">Click <strong>&#128269; Review My Info</strong> to see a summary of your entries here.</p>';
   }
 }
 
@@ -93,9 +94,9 @@ function updateSalarySlider() {
   var slider  = document.getElementById("salaryBar");
   var display = document.getElementById("salaryVal");
   if (slider && display) {
-    var value = parseInt(slider.value, 10);
+    var val = parseInt(slider.value, 10);
     /* Format with $ and commas */
-    display.textContent = "$" + value.toLocaleString("en-US");
+    display.textContent = "$" + val.toLocaleString("en-US");
   }
 }
 
@@ -113,23 +114,23 @@ function checkPasswordStrength() {
 
   if (pwd.length === 0) {
     bar.style.width = "0%";
-    bar.style.backgroundColor = "
+    bar.style.backgroundColor = "#ccc";
     label.textContent = "";
     return;
   }
 
   var score = 0;
-  if (pwd.length >= 8)                      { score++; }  /* minimum length */
+  if (pwd.length >= 8)                      { score++; }  /* min length */
   if (pwd.length >= 12)                     { score++; }  /* good length */
   if (/[A-Z]/.test(pwd))                   { score++; }  /* uppercase */
-  if (/[a-additional]/.test(pwd))                   { score++; }  /* lowercase */
+  if (/[a-z]/.test(pwd))                   { score++; }  /* lowercase */
   if (/[0-9]/.test(pwd))                   { score++; }  /* digit */
-  if (/[!@
+  if (/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) { score++; }  /* special char */
 
   var pct   = Math.round((score / 6) * 100);
-  var color = score <= 2 ? "
-            : score <= 4 ? "
-            :              "
+  var color = score <= 2 ? "#e74c3c"   /* weak — red */
+            : score <= 4 ? "#f39c12"   /* fair — orange */
+            :              "#27ae60";  /* strong — green */
   var text  = score <= 2 ? "Weak — add uppercase, numbers, and special characters"
             : score <= 4 ? "Fair — try adding more variety"
             :              "Strong password ✔";
@@ -157,10 +158,10 @@ function checkPasswordMatch() {
   }
   if (p1 === p2) {
     label.textContent = "✔ Passwords match";
-    label.style.color = "
+    label.style.color = "#27ae60";
   } else {
     label.textContent = "✖ Passwords do not match";
-    label.style.color = "
+    label.style.color = "#e74c3c";
   }
 }
 
@@ -179,7 +180,7 @@ function showReview() {
   /* -- Helper: build one review row -- */
   function row(label, value, status, note) {
     var statusClass = status === "ERROR" ? "rv-error" : "rv-pass";
-    var statusIcon  = status === "ERROR" ? "&
+    var statusIcon  = status === "ERROR" ? "&#10008; ERROR" : "&#10004; OK";
     var noteStr     = note ? '<span class="rv-note">' + note + '</span>' : "";
     return '<div class="rv-row">'
          + '<span class="rv-label">' + label + '</span>'
@@ -192,12 +193,12 @@ function showReview() {
   /* -- Helper: checked checkboxes as a comma-separated list -- */
   function getChecked(names) {
     var results = [];
-    for (var idx = 0; idx < names.length; idx++) {
-      var cb = document.querySelector('input[name="' + names[idx].name + '"]');
-      var boxes = document.querySelectorAll('input[name="' + names[idx].name + '"]');
+    for (var i = 0; i < names.length; i++) {
+      var cb = document.querySelector('input[name="' + names[i].name + '"]');
+      var boxes = document.querySelectorAll('input[name="' + names[i].name + '"]');
       /* each name is unique, find the specific one */
-      var el = document.querySelector('input[name="' + names[idx].name + '"]');
-      if (el && el.checked) { results.push(names[idx].label); }
+      var el = document.querySelector('input[name="' + names[i].name + '"]');
+      if (el && el.checked) { results.push(names[i].label); }
     }
     return results.length > 0 ? results.join(", ") : "None selected";
   }
@@ -205,8 +206,8 @@ function showReview() {
   /* -- Helper: get selected radio value -- */
   function getRadio(groupName) {
     var radios = document.getElementsByName(groupName);
-    for (var idx = 0; idx < radios.length; idx++) {
-      if (radios[idx].checked) { return radios[idx].value; }
+    for (var i = 0; i < radios.length; i++) {
+      if (radios[i].checked) { return radios[i].value; }
     }
     return "";
   }
@@ -246,9 +247,9 @@ function showReview() {
     {name:"hx_hepb",       label:"Hepatitis B"}
   ];
   var cbChecked = [];
-  for (var idx = 0; idx < cbNames.length; idx++) {
-    var el = document.querySelector('input[name="' + cbNames[idx].name + '"]');
-    if (el && el.checked) { cbChecked.push(cbNames[idx].label); }
+  for (var i = 0; i < cbNames.length; i++) {
+    var el = document.querySelector('input[name="' + cbNames[i].name + '"]');
+    if (el && el.checked) { cbChecked.push(cbNames[i].label); }
   }
   var cbDisplay = cbChecked.length > 0 ? cbChecked.join(", ") : "None selected";
 
@@ -294,11 +295,11 @@ function showReview() {
 
   /* -- Validate: Address -- */
   var addrStatus = "OK", addrNote = "";
-  if (!addr1 || addr1.length < 2) { addrStatus = "ERROR"; addrNote = "Address Line 1 is required (minimum 2 chars)."; }
+  if (!addr1 || addr1.length < 2) { addrStatus = "ERROR"; addrNote = "Address Line 1 is required (min 2 chars)."; }
 
   /* -- Validate: City -- */
   var cityStatus = "OK", cityNote = "";
-  if (!city || city.length < 2) { cityStatus = "ERROR"; cityNote = "City is required (minimum 2 chars)."; }
+  if (!city || city.length < 2) { cityStatus = "ERROR"; cityNote = "City is required (min 2 chars)."; }
 
   /* -- Validate: State -- */
   var stateStatus = "OK", stateNote = "";
@@ -327,7 +328,7 @@ function showReview() {
   var useridStatus = "OK", useridNote = "";
   if (!userid || userid.length < 5 || userid.length > 30) {
     useridStatus = "ERROR"; useridNote = "User ID must be 5–30 characters.";
-  } else if (!/^[a-additional][a-z0-9_\-]{4,29}$/.test(userid)) {
+  } else if (!/^[a-z][a-z0-9_\-]{4,29}$/.test(userid)) {
     useridStatus = "ERROR"; useridNote = "Must start with a letter. Letters, numbers, underscore, dash only. No spaces.";
   }
 
@@ -337,12 +338,12 @@ function showReview() {
     pwdStatus = "ERROR"; pwdNote = "Password must be 8–30 characters.";
   } else if (!/[A-Z]/.test(pwd)) {
     pwdStatus = "ERROR"; pwdNote = "Needs at least 1 uppercase letter.";
-  } else if (!/[a-additional]/.test(pwd)) {
+  } else if (!/[a-z]/.test(pwd)) {
     pwdStatus = "ERROR"; pwdNote = "Needs at least 1 lowercase letter.";
   } else if (!/[0-9]/.test(pwd)) {
     pwdStatus = "ERROR"; pwdNote = "Needs at least 1 number.";
-  } else if (!/[!@
-    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 special character (!@
+  } else if (!/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) {
+    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 special character (!@#%^&*...).";
   } else if (/"/.test(pwd)) {
     pwdStatus = "ERROR"; pwdNote = "Password cannot contain quotation marks.";
   } else if (userid && pwd.toLowerCase().indexOf(userid) !== -1) {
@@ -392,8 +393,8 @@ function showReview() {
   /* Section: Account */
   html += '<div class="rv-section-title">Account Credentials</div>';
   html += row("User ID",             userid || "", useridStatus, useridNote);
-  html += row("Password",            pwd ? "&
-  html += row("Password Confirmed",  pwd2 ? "&
+  html += row("Password",            pwd ? "&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226; (hidden)" : "", pwdStatus,  pwdNote);
+  html += row("Password Confirmed",  pwd2 ? "&#10004; Entered" : "", pwd2Status, pwd2Note);
 
   /* Insert into the review panel */
   body.innerHTML = html;
@@ -421,10 +422,10 @@ function handleSubmit() {
   /* ── Name ── */
   var fname = frm.fname.value.trim();
   var lname = frm.lname.value.trim();
-  if (!fname || !/^[A-Za-additional'\-]{1,30}$/.test(fname)) {
+  if (!fname || !/^[A-Za-z'\-]{1,30}$/.test(fname)) {
     fail("fname-err", "First name: letters, apostrophes, dashes only (1–30 chars).", frm.fname);
   }
-  if (frm.mi.value && !/^[A-Za-additional]$/.test(frm.mi.value)) {
+  if (frm.mi.value && !/^[A-Za-z]$/.test(frm.mi.value)) {
     fail("mi-err", "Middle initial must be a single letter.", frm.mi);
   }
   if (!lname || lname.length < 1 || lname.length > 30) {
@@ -472,7 +473,7 @@ function handleSubmit() {
   /* ── City ── */
   var city = frm.city.value.trim();
   if (!city || city.length < 2) {
-    fail("city-err", "City is required (minimum 2 characters).", frm.city);
+    fail("city-err", "City is required (min 2 characters).", frm.city);
   }
 
   /* ── State ── */
@@ -496,7 +497,7 @@ function handleSubmit() {
   frm.userid.value = uid;  /* enforce lowercase */
   if (!uid || uid.length < 5 || uid.length > 30) {
     fail("userid-err", "User ID must be 5–30 characters.", frm.userid);
-  } else if (!/^[a-additional][a-z0-9_\-]{4,29}$/.test(uid)) {
+  } else if (!/^[a-z][a-z0-9_\-]{4,29}$/.test(uid)) {
     fail("userid-err", "Must start with a letter. Letters, numbers, underscore, dash. No spaces.", frm.userid);
   }
 
@@ -507,12 +508,12 @@ function handleSubmit() {
     fail("passid-err", "Password must be 8–30 characters.", frm.passid);
   } else if (!/[A-Z]/.test(pwd)) {
     fail("passid-err", "Password needs at least 1 uppercase letter.", frm.passid);
-  } else if (!/[a-additional]/.test(pwd)) {
+  } else if (!/[a-z]/.test(pwd)) {
     fail("passid-err", "Password needs at least 1 lowercase letter.", frm.passid);
   } else if (!/[0-9]/.test(pwd)) {
     fail("passid-err", "Password needs at least 1 number.", frm.passid);
-  } else if (!/[!@
-    fail("passid-err", "Password needs at least 1 special character (!@
+  } else if (!/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) {
+    fail("passid-err", "Password needs at least 1 special character (!@#%^&*...).", frm.passid);
   } else if (/"/.test(pwd)) {
     fail("passid-err", "Password cannot contain quotation marks.", frm.passid);
   } else if (uid && pwd.toLowerCase().indexOf(uid) !== -1) {
@@ -538,8 +539,8 @@ function handleSubmit() {
 /* ── Helper: get selected radio value ── */
 function getRadioValue(groupName) {
   var radios = document.getElementsByName(groupName);
-  for (var idx = 0; idx < radios.length; idx++) {
-    if (radios[idx].checked) { return radios[idx].value; }
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) { return radios[i].value; }
   }
   return "";
 }
