@@ -1,6 +1,6 @@
 /*
   validation.js - HW2
-  Student Name
+  Aabid Kazia
   created 3/27/26, last edited 4/2/26
 
   JS for the patient registration form. handles validation, review panel, etc.
