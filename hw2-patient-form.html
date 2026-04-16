@@ -1,22 +1,13 @@
 <!DOCTYPE html>
 <!--
-  ================================================================
-  Program name:   patient-form.html  (Homework 2)
-  Author:         Aabid Kazia
-  Date created:   March 27, 2026
-  Date last edited: March 27, 2026
-  Version:        2.0
-  Description:    We'R'Docs Medical Center — New Patient Registration
-                  Form. Built on HW1. Adds: HTML5 pattern validation
-                  on all fields, title attributes for context help,
-                  live password strength checking, salary/health
-                  slide bars with dynamic JS display, a "Review"
-                  button that redisplays all entered data in a review
-                  panel without reloading the page, and lowercase
-                  conversion of the User ID field.
-                  External CSS: style.css
-                  External JS:  validation.js
- 
+  patient-form.html - HW2
+  Aabid Kazia
+  created 3/27/26, last edited 4/2/26
+
+  New patient registration form for We'R'Docs Medical.
+  Built on top of HW1. Added: pattern validation, password strength meter,
+  salary + health sliders, review panel, lowercase user ID.
+  CSS: style.css  |  JS: validation.js
 -->
 <html lang="en">
 <head>
@@ -29,9 +20,7 @@
 
 <body onload="initPage();">
 
-<!-- 
-     BANNER / HEADER
-      -->
+<!-- banner -->
 <div id="banner">
   <div id="banner-logo">
     <svg width="72" height="72" viewBox="0 0 72 72"
@@ -49,14 +38,9 @@
   </div>
 </div>
 
-<!-- 
-     PAGE WRAPPER — two-column layout (form left, review right)
-      -->
+<!-- two-column layout: form on left, review panel on right -->
 <div id="page-wrapper">
 
-<!-- 
-     MAIN FORM COLUMN
-      -->
 <div id="main-content">
 
   <h2>New Patient Registration</h2>
@@ -70,18 +54,15 @@
         action="thankyou.html"
         novalidate>
 
-    <!-- 
-         BLOCK 1 — PERSONAL INFORMATION
-          -->
+    <!-- Block 1: Personal Info -->
     <fieldset>
       <legend>&#128100; Block 1 &mdash; Personal Information</legend>
       <table class="form-table">
 
-        <!-- First Name / MI / Last Name — same row -->
+        <!-- name row: first / MI / last all in one line -->
         <tr>
           <td class="lbl"><label for="fname">Name <span class="req">*</span></label></td>
           <td>
-            <!-- First Name: 1-30 chars, letters/apostrophes/dashes only -->
             <input type="text" id="fname" name="fname"
                    maxlength="30" size="16"
                    placeholder="First Name"
@@ -93,24 +74,22 @@
             <span class="err-msg" id="fname-err"></span>
             &nbsp;
             <label for="mi" class="inline-lbl">MI</label>
-            <!-- Middle Initial: exactly 1 letter, optional -->
             <input type="text" id="mi" name="mi"
                    maxlength="1" size="2"
                    placeholder="M"
                    tabindex="2"
-                   title="Middle Initial: 1 letter only. This field is optional."
+                   title="Middle Initial: 1 letter only. Optional."
                    pattern="[A-Za-z]"
                    style="width:2.8em;text-align:center;"
                    oninput="clearError('mi-err')">
             <span class="err-msg" id="mi-err"></span>
             &nbsp;
             <label for="lname" class="inline-lbl">Last <span class="req">*</span></label>
-            <!-- Last Name: 1-30 chars, letters/apostrophes/numbers 2-5/dashes -->
             <input type="text" id="lname" name="lname"
                    maxlength="30" size="16"
                    placeholder="Last Name"
                    tabindex="3"
-                   title="Last Name: 1 to 30 characters. Letters, apostrophes, dashes, and suffix numbers (2nd–5th) only."
+                   title="Last Name: 1 to 30 characters. Letters, apostrophes, dashes, and suffix numbers (2nd-5th) only."
                    pattern="[A-Za-z'\-0-9\s]{1,30}"
                    required
                    oninput="clearError('lname-err')">
@@ -118,11 +97,10 @@
           </td>
         </tr>
 
-        <!-- Date of Birth: MM/DD/YYYY with min/max enforced by JS -->
+        <!-- date of birth - min/max set by initPage() -->
         <tr>
           <td class="lbl"><label for="dob">Date of Birth <span class="req">*</span></label></td>
           <td>
-            <!-- Using type="date" for browser date-picker; min/max set by initPage() -->
             <input type="date" id="dob" name="dob"
                    tabindex="4"
                    title="Date of Birth: Must be a real past date. Cannot be in the future or more than 120 years ago."
@@ -133,16 +111,15 @@
           </td>
         </tr>
 
-        <!-- Social Security — obscured, password style -->
+        <!-- SSN - type=password so it shows as dots -->
         <tr>
           <td class="lbl"><label for="ssn">Social Security # <span class="req">*</span></label></td>
           <td>
-            <!-- type="password" obscures digits as *** on screen -->
             <input type="password" id="ssn" name="ssn"
                    maxlength="11" size="14"
                    placeholder="XXX-XX-XXXX"
                    tabindex="5"
-                   title="Social Security Number: Enter in XXX-XX-XXXX format. This field is obscured for your security."
+                   title="Social Security Number: Enter in XXX-XX-XXXX format. Obscured for security."
                    pattern="\d{3}-?\d{2}-?\d{4}"
                    required
                    oninput="clearError('ssn-err')">
@@ -154,14 +131,11 @@
       </table>
     </fieldset>
 
-    <!--
-         BLOCK 2 — CONTACT INFORMATION
-          -->
+    <!-- Block 2: Contact -->
     <fieldset>
       <legend>&#128222; Block 2 &mdash; Contact Information</legend>
       <table class="form-table">
 
-        <!-- Email -->
         <tr>
           <td class="lbl"><label for="email">Email Address <span class="req">*</span></label></td>
           <td>
@@ -177,16 +151,14 @@
           </td>
         </tr>
 
-        <!-- Phone -->
         <tr>
           <td class="lbl"><label for="phone">Phone Number <span class="req">*</span></label></td>
           <td>
-            <!-- Pattern enforces NNN-NNN-NNNN format -->
             <input type="text" id="phone" name="phone"
                    maxlength="12" size="14"
                    placeholder="713-555-1234"
                    tabindex="7"
-                   title="Phone Number: Enter in the format NNN-NNN-NNNN (digits and dashes only). Example: 713-555-1234"
+                   title="Phone Number: NNN-NNN-NNNN format. Example: 713-555-1234"
                    pattern="\d{3}-\d{3}-\d{4}"
                    required
                    oninput="clearError('phone-err')">
@@ -198,9 +170,7 @@
       </table>
     </fieldset>
 
-    <!-- 
-         BLOCK 3 — ADDRESS
-          -->
+    <!-- Block 3: Address -->
     <fieldset>
       <legend>&#127968; Block 3 &mdash; Home Address</legend>
       <table class="form-table">
@@ -212,7 +182,7 @@
                    maxlength="30" size="34"
                    placeholder="Street number and name"
                    tabindex="8"
-                   title="Address Line 1: Required. 2 to 30 characters. Enter your street number and street name."
+                   title="Address Line 1: Required. 2 to 30 characters."
                    minlength="2"
                    required
                    oninput="clearError('addr1-err')">
@@ -227,14 +197,14 @@
                    maxlength="30" size="34"
                    placeholder="Apt, Suite, Unit (optional)"
                    tabindex="9"
-                   title="Address Line 2: Optional. If entered, must be 2 to 30 characters. Use for Apt, Suite, or Unit numbers."
+                   title="Address Line 2: Optional. If entered, must be at least 2 characters."
                    minlength="2"
                    oninput="clearError('addr2-err')">
             <span class="err-msg" id="addr2-err"></span>
           </td>
         </tr>
 
-        <!-- City / State / ZIP on same row -->
+        <!-- city / state / zip on one row -->
         <tr>
           <td class="lbl"><label for="city">City / State / ZIP <span class="req">*</span></label></td>
           <td>
@@ -242,7 +212,7 @@
                    maxlength="30" size="18"
                    placeholder="City"
                    tabindex="10"
-                   title="City: Required. 2 to 30 characters. Letters and spaces only."
+                   title="City: Required. 2 to 30 characters."
                    pattern="[A-Za-z\s\-\.]{2,30}"
                    required
                    oninput="clearError('city-err')">
@@ -250,7 +220,7 @@
             &nbsp;
             <label for="state" class="inline-lbl">State <span class="req">*</span></label>
             <select id="state" name="state" tabindex="11"
-                    title="State: Required. Select your state from the dropdown list."
+                    title="State: Required. Pick your state."
                     onchange="clearError('state-err')">
               <option value="">(State)</option>
               <option value="AL">AL</option><option value="AK">AK</option>
@@ -283,12 +253,12 @@
             <span class="err-msg" id="state-err"></span>
             &nbsp;
             <label for="zip" class="inline-lbl">ZIP <span class="req">*</span></label>
-            <!-- ZIP: 5 digits required; up to 10 with dash for ZIP+4; will be truncated to 5 on review -->
+            <!-- ZIP+4 is allowed but gets truncated to 5 on review -->
             <input type="text" id="zip" name="zip"
                    maxlength="10" size="10"
                    placeholder="77496"
                    tabindex="12"
-                   title="ZIP Code: Required. Enter 5 digits (e.g. 77496). You may include ZIP+4 (e.g. 77496-1234) — it will be truncated to 5 digits on review."
+                   title="ZIP Code: 5 digits required (e.g. 77496). ZIP+4 also accepted (e.g. 77496-1234) but will be truncated to 5 on review."
                    pattern="\d{5}(-\d{4})?"
                    required
                    oninput="clearError('zip-err')">
@@ -299,87 +269,80 @@
       </table>
     </fieldset>
 
-    <!-- 
-         BLOCK 4 — CHOICES (checkboxes, radios, sliders, textarea)
-          -->
+    <!-- Block 4: Health stuff - checkboxes, radios, sliders, textarea -->
     <fieldset>
       <legend>&#9745; Block 4 &mdash; Health &amp; Preferences</legend>
 
-      <!-- CHECKBOXES — medical history -->
       <p class="section-note">Check ALL that apply to your medical history:</p>
       <table class="form-table">
         <tr>
           <td class="lbl">Have you had&hellip;</td>
           <td class="checkbox-group">
-            <label class="cb-label" title="Check if you have previously had Chicken Pox">
+            <label class="cb-label" title="Check if you have had Chicken Pox">
               <input type="checkbox" name="hx_chickenpox" value="chickenpox"> Chicken Pox
             </label>
-            <label class="cb-label" title="Check if you have previously had Measles">
+            <label class="cb-label" title="Check if you have had Measles">
               <input type="checkbox" name="hx_measles" value="measles"> Measles
             </label>
-            <label class="cb-label" title="Check if you have previously had COVID-19">
+            <label class="cb-label" title="Check if you have had COVID-19">
               <input type="checkbox" name="hx_covid" value="covid"> COVID-19
             </label>
-            <label class="cb-label" title="Check if you have previously had Small Pox">
+            <label class="cb-label" title="Check if you have had Small Pox">
               <input type="checkbox" name="hx_smallpox" value="smallpox"> Small Pox
             </label>
-            <label class="cb-label" title="Check if you have received a Tetanus vaccination">
+            <label class="cb-label" title="Check if you've had a Tetanus vaccination">
               <input type="checkbox" name="hx_tetanus" value="tetanus"> Tetanus Shot
             </label>
-            <label class="cb-label" title="Check if you receive an annual Flu Shot">
+            <label class="cb-label" title="Check if you get an annual Flu Shot">
               <input type="checkbox" name="hx_flu" value="flu"> Flu Shot (Annual)
             </label>
-            <label class="cb-label" title="Check if you have received the Hepatitis B vaccine">
+            <label class="cb-label" title="Check if you have had the Hepatitis B vaccine">
               <input type="checkbox" name="hx_hepb" value="hepb"> Hepatitis B
             </label>
           </td>
         </tr>
       </table>
 
-      <!-- RADIO BUTTONS -->
       <table class="form-table" style="margin-top:10px;">
-        <!-- Radio Set 1: Gender -->
         <tr>
           <td class="lbl">Gender <span class="req">*</span></td>
           <td class="radio-group">
-            <label class="rb-label" title="Select Male for gender">
+            <label class="rb-label" title="Select Male">
               <input type="radio" name="gender" value="Male"> Male
             </label>
-            <label class="rb-label" title="Select Female for gender">
+            <label class="rb-label" title="Select Female">
               <input type="radio" name="gender" value="Female"> Female
             </label>
-            <label class="rb-label" title="Select if you prefer not to specify a gender">
+            <label class="rb-label" title="Prefer not to say">
               <input type="radio" name="gender" value="Other"> Other / Prefer not to say
             </label>
           </td>
         </tr>
-        <!-- Radio Set 2: Vaccinated -->
         <tr>
           <td class="lbl">Fully Vaccinated? <span class="req">*</span></td>
           <td class="radio-group">
-            <label class="rb-label" title="Select Yes if you are fully vaccinated against COVID-19">
+            <label class="rb-label" title="Yes - fully vaccinated against COVID-19">
               <input type="radio" name="vaccinated" value="Yes"> Yes
             </label>
-            <label class="rb-label" title="Select No if you are not fully vaccinated">
+            <label class="rb-label" title="No - not fully vaccinated">
               <input type="radio" name="vaccinated" value="No"> No
             </label>
           </td>
         </tr>
-        <!-- Radio Set 3: Insurance -->
         <tr>
           <td class="lbl">Has Insurance? <span class="req">*</span></td>
           <td class="radio-group">
-            <label class="rb-label" title="Select Yes if you currently have health insurance coverage">
+            <label class="rb-label" title="Yes - I have health insurance">
               <input type="radio" name="insurance" value="Yes"> Yes
             </label>
-            <label class="rb-label" title="Select No if you do not currently have health insurance">
+            <label class="rb-label" title="No - I don't have health insurance">
               <input type="radio" name="insurance" value="No"> No
             </label>
           </td>
         </tr>
       </table>
 
-      <!-- SLIDE BAR 1: Health Score (1–10) -->
+      <!-- health score slider -->
       <table class="form-table" style="margin-top:12px;">
         <tr>
           <td class="lbl">
@@ -391,7 +354,7 @@
               <input type="range" id="healthScore" name="healthScore"
                      min="1" max="10" value="5" step="1"
                      tabindex="13"
-                     title="Overall Health Score: Slide to rate your health from 1 (very poor) to 10 (excellent)."
+                     title="Overall Health Score: 1 (very poor) to 10 (excellent)."
                      oninput="updateSlider('healthScore','healthVal', 1, '')">
               <span class="slider-end">10<br><small>Excellent</small></span>
               <span class="slider-current">Score: <strong id="healthVal">5</strong> / 10</span>
@@ -399,7 +362,7 @@
           </td>
         </tr>
 
-        <!-- SLIDE BAR 2: Desired Salary ($20,000 – $200,000) — NEW for HW2 -->
+        <!-- salary slider - new for HW2 -->
         <tr>
           <td class="lbl">
             <label for="salaryBar">Desired Salary</label>
@@ -410,7 +373,7 @@
               <input type="range" id="salaryBar" name="salaryBar"
                      min="20000" max="200000" value="60000" step="5000"
                      tabindex="14"
-                     title="Desired Annual Salary: Slide to select your desired annual salary range from $20,000 to $200,000."
+                     title="Desired Annual Salary: $20,000 to $200,000."
                      oninput="updateSalarySlider()">
               <span class="slider-end">$200k<br><small>Max</small></span>
               <span class="slider-current"><strong id="salaryVal">$60,000</strong> / yr</span>
@@ -420,16 +383,15 @@
         </tr>
       </table>
 
-      <!-- TEXTAREA: Symptoms -->
+      <!-- symptoms textarea - no quotes allowed (breaks the DB apparently) -->
       <table class="form-table" style="margin-top:8px;">
         <tr>
           <td class="lbl"><label for="symptoms">Describe Symptoms</label></td>
           <td>
-            <!-- Note: pattern avoids double-quotes which can break DB -->
             <textarea id="symptoms" name="symptoms"
                       rows="5" cols="55"
                       tabindex="15"
-                      title="Current Symptoms: Optional. Describe your symptoms, how long you have had them, and their severity. Please do not use quotation marks."
+                      title="Current Symptoms: Optional. Describe symptoms, duration, and severity. No quotation marks."
                       placeholder="Describe your current symptoms, duration, and severity. (Optional — no quotation marks please)"
                       pattern='[^"]*'></textarea>
             <span class="hint">Optional. Avoid using quotation marks &quot; in this field.</span>
@@ -439,23 +401,20 @@
 
     </fieldset>
 
-    <!-- 
-         BLOCK 5 — ACCOUNT CREDENTIALS
-          -->
+    <!-- Block 5: Account credentials -->
     <fieldset>
       <legend>&#128274; Block 5 &mdash; Account Credentials</legend>
       <table class="form-table">
 
-        <!-- User ID -->
+        <!-- user ID - auto-lowercased on blur -->
         <tr>
           <td class="lbl"><label for="userid">User ID <span class="req">*</span></label></td>
           <td>
-            <!-- Converted to lowercase automatically on blur/submit -->
             <input type="text" id="userid" name="userid"
                    maxlength="30" size="24"
                    placeholder="Choose a username"
                    tabindex="16"
-                   title="User ID: 5 to 30 characters. Letters, numbers, underscore or dash only. Must start with a letter. NO spaces. Will be converted to lowercase automatically."
+                   title="User ID: 5 to 30 characters. Letters, numbers, underscore or dash only. Must start with a letter. No spaces. Auto-lowercased."
                    pattern="[A-Za-z][A-Za-z0-9_\-]{4,29}"
                    required
                    oninput="clearError('userid-err')"
@@ -465,20 +424,17 @@
           </td>
         </tr>
 
-        <!-- Password -->
         <tr>
           <td class="lbl"><label for="passid">Password <span class="req">*</span></label></td>
           <td>
-            <!-- type="password" obscures characters as *** -->
             <input type="password" id="passid" name="passid"
                    maxlength="30" size="24"
                    placeholder="Min 8 characters"
                    tabindex="17"
-                   title="Password: 8 to 30 characters. Must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#%^&amp;*()-_+=). No quotation marks allowed."
+                   title="Password: 8 to 30 characters. Needs uppercase, lowercase, number, and special character. No quotation marks."
                    required
                    oninput="checkPasswordStrength(); clearError('passid-err')">
             <span class="err-msg" id="passid-err"></span>
-            <!-- Live password strength indicator -->
             <div id="strength-bar-wrap">
               <div id="strength-bar"></div>
             </div>
@@ -486,7 +442,6 @@
           </td>
         </tr>
 
-        <!-- Re-enter Password -->
         <tr>
           <td class="lbl"><label for="passid2">Re-enter Password <span class="req">*</span></label></td>
           <td>
@@ -494,7 +449,7 @@
                    maxlength="30" size="24"
                    placeholder="Repeat password"
                    tabindex="18"
-                   title="Re-enter Password: Must exactly match the password you entered above."
+                   title="Re-enter Password: Must match the password above."
                    required
                    oninput="checkPasswordMatch(); clearError('passid2-err')">
             <span class="err-msg" id="passid2-err"></span>
@@ -505,17 +460,14 @@
       </table>
     </fieldset>
 
-    <!-- ── ACTION BUTTONS ──────────────────────────────────────── -->
+    <!-- buttons -->
     <div id="form-buttons">
-      <!-- Review button: shows entered data WITHOUT submitting -->
       <input type="button" id="btn-review" value="&#128269; Review My Info"
              tabindex="19"
              onclick="showReview();">
-      <!-- Reset clears all fields -->
-      <input type="reset"  id="btn-reset"  value="&#10006; Start Over"
+      <input type="reset" id="btn-reset" value="&#10006; Start Over"
              tabindex="20"
              onclick="clearReview();">
-      <!-- Submit: runs full JS validation then goes to thankyou.html -->
       <input type="submit" id="btn-submit" value="&#10004; Submit Registration"
              tabindex="21">
     </div>
@@ -523,32 +475,26 @@
   </form>
 </div><!-- end #main-content -->
 
-<!-- 
-     REVIEW PANEL — shown to the right / below when Review clicked
-     Uses <div> and <span> tags; does NOT rewrite the page
-      -->
+<!-- review panel - JS fills this in when the button is clicked -->
 <div id="review-panel">
   <div id="review-header">
     <h3>&#128203; Please Review This Information</h3>
     <p class="review-subhead">Check your entries below before submitting. Fields with errors are marked in red.</p>
   </div>
   <div id="review-body">
-    <!-- Populated dynamically by showReview() in validation.js -->
     <p class="review-placeholder">Click <strong>&#128269; Review My Info</strong> to see a summary of your entries here.</p>
   </div>
 </div>
 
 </div><!-- end #page-wrapper -->
 
-<!--
-     FOOTER
-      -->
+<!-- footer -->
 <div id="footer">
   <div id="footer-left">
     <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <circle cx="15" cy="15" r="14" fill="#1a56db"/>
-      <rect x="11" y="4"  width="8"  height="22" rx="3" fill="#fff"/>
-      <rect x="4"  y="11" width="22" height="8"  rx="3" fill="#fff"/>
+      <rect x="11" y="4" width="8" height="22" rx="3" fill="#fff"/>
+      <rect x="4" y="11" width="22" height="8" rx="3" fill="#fff"/>
     </svg>
     <span class="footer-brand">We&#39;R&#39;Docs Medical</span>
   </div>
@@ -558,9 +504,9 @@
       &#128222; Contact Us
     </button>
     <div id="social-links">
-      <a href="https://www.facebook.com"  target="_blank" rel="noopener">Facebook</a>
+      <a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook</a>
       <span class="sep">|</span>
-      <a href="https://www.twitter.com"   target="_blank" rel="noopener">Twitter / X</a>
+      <a href="https://www.twitter.com" target="_blank" rel="noopener">Twitter / X</a>
       <span class="sep">|</span>
       <a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a>
     </div>
@@ -571,35 +517,31 @@
   </div>
 </div>
 
-<!-- 
-     INLINE JS — dynamic date, footer year, DOB min/max dates
-     -->
 <script>
-  /* initPage() — called onload. Sets dynamic date + DOB date limits */
+  // sets the banner date and DOB min/max limits on page load
   function initPage() {
-    /* -- Dynamic banner date -- */
-    var days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
     var months = ["January","February","March","April","May","June",
                   "July","August","September","October","November","December"];
     var now = new Date();
-    var d   = now.getDate();
-    var sfx = (d===1||d===21||d===31)?"st":(d===2||d===22)?"nd":(d===3||d===23)?"rd":"th";
+    var d = now.getDate();
+    var sfx = (d===1||d===21||d===31) ? "st" : (d===2||d===22) ? "nd" : (d===3||d===23) ? "rd" : "th";
+
     document.getElementById("dynamic-date").innerHTML =
       "Today is: <strong>" + days[now.getDay()] + ", " +
       months[now.getMonth()] + " " + d + sfx + ", " + now.getFullYear() + "</strong>";
+
     document.getElementById("footer-year").textContent = now.getFullYear();
 
-    /* -- Set DOB min (120 years ago) and max (today) dynamically -- */
-    var maxDate = now.toISOString().split("T")[0];          /* today */
+    // set DOB range: no future dates, no older than 120 years
+    var maxDate = now.toISOString().split("T")[0];
     var minYear = new Date();
     minYear.setFullYear(now.getFullYear() - 120);
-    var minDate = minYear.toISOString().split("T")[0];      /* 120 yrs ago */
+    var minDate = minYear.toISOString().split("T")[0];
     document.getElementById("dob").setAttribute("max", maxDate);
     document.getElementById("dob").setAttribute("min", minDate);
   }
 </script>
-<!-- 
-     END OF DOCUMENT: patient-form.html  (HW2)
-     -->
+
 </body>
 </html>
