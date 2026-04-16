@@ -1,9 +1,8 @@
-@@ -0,0 +1,605 @@
 <!DOCTYPE html>
 <!--
   ================================================================
   Program name:   patient-form.html  (Homework 2)
-  Author:         Student Name
+  Author:         Aabid Kazia
   Date created:   March 27, 2026
   Date last edited: March 27, 2026
   Version:        2.0
@@ -17,7 +16,7 @@
                   conversion of the User ID field.
                   External CSS: style.css
                   External JS:  validation.js
-  ================================================================
+ 
 -->
 <html lang="en">
 <head>
@@ -30,9 +29,9 @@
 
 <body onload="initPage();">
 
-<!-- ================================================================
+<!-- 
      BANNER / HEADER
-     ================================================================ -->
+      -->
 <div id="banner">
   <div id="banner-logo">
     <svg width="72" height="72" viewBox="0 0 72 72"
@@ -50,14 +49,14 @@
   </div>
 </div>
 
-<!-- ================================================================
+<!-- 
      PAGE WRAPPER — two-column layout (form left, review right)
-     ================================================================ -->
+      -->
 <div id="page-wrapper">
 
-<!-- ================================================================
+<!-- 
      MAIN FORM COLUMN
-     ================================================================ -->
+      -->
 <div id="main-content">
 
   <h2>New Patient Registration</h2>
@@ -71,9 +70,9 @@
         action="thankyou.html"
         novalidate>
 
-    <!-- ============================================================
+    <!-- 
          BLOCK 1 — PERSONAL INFORMATION
-         ============================================================ -->
+          -->
     <fieldset>
       <legend>&#128100; Block 1 &mdash; Personal Information</legend>
       <table class="form-table">
@@ -155,9 +154,9 @@
       </table>
     </fieldset>
 
-    <!-- ============================================================
+    <!--
          BLOCK 2 — CONTACT INFORMATION
-         ============================================================ -->
+          -->
     <fieldset>
       <legend>&#128222; Block 2 &mdash; Contact Information</legend>
       <table class="form-table">
@@ -199,9 +198,9 @@
       </table>
     </fieldset>
 
-    <!-- ============================================================
+    <!-- 
          BLOCK 3 — ADDRESS
-         ============================================================ -->
+          -->
     <fieldset>
       <legend>&#127968; Block 3 &mdash; Home Address</legend>
       <table class="form-table">
@@ -300,9 +299,9 @@
       </table>
     </fieldset>
 
-    <!-- ============================================================
+    <!-- 
          BLOCK 4 — CHOICES (checkboxes, radios, sliders, textarea)
-         ============================================================ -->
+          -->
     <fieldset>
       <legend>&#9745; Block 4 &mdash; Health &amp; Preferences</legend>
 
@@ -440,9 +439,9 @@
 
     </fieldset>
 
-    <!-- ============================================================
+    <!-- 
          BLOCK 5 — ACCOUNT CREDENTIALS
-         ============================================================ -->
+          -->
     <fieldset>
       <legend>&#128274; Block 5 &mdash; Account Credentials</legend>
       <table class="form-table">
@@ -524,10 +523,10 @@
   </form>
 </div><!-- end #main-content -->
 
-<!-- ================================================================
+<!-- 
      REVIEW PANEL — shown to the right / below when Review clicked
      Uses <div> and <span> tags; does NOT rewrite the page
-     ================================================================ -->
+      -->
 <div id="review-panel">
   <div id="review-header">
     <h3>&#128203; Please Review This Information</h3>
@@ -541,9 +540,9 @@
 
 </div><!-- end #page-wrapper -->
 
-<!-- ================================================================
+<!--
      FOOTER
-     ================================================================ -->
+      -->
 <div id="footer">
   <div id="footer-left">
     <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -572,9 +571,9 @@
   </div>
 </div>
 
-<!-- ================================================================
+<!-- 
      INLINE JS — dynamic date, footer year, DOB min/max dates
-     ================================================================ -->
+     -->
 <script>
   /* initPage() — called onload. Sets dynamic date + DOB date limits */
   function initPage() {
@@ -599,8 +598,8 @@
     document.getElementById("dob").setAttribute("min", minDate);
   }
 </script>
-<!-- ================================================================
+<!-- 
      END OF DOCUMENT: patient-form.html  (HW2)
-     ================================================================ -->
+     -->
 </body>
 </html>
