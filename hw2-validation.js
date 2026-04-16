@@ -1,7 +1,7 @@
 /*
   ================================================================
   Program name:   validation.js  (Homework 2)
-  Author:         Student Name
+  Author:         Aabid Kazia
   Date created:   March 27, 2026
   Date last edited: March 27, 2026
   Version:        2.0
@@ -19,14 +19,14 @@
                                           reloading the page
                   - handleSubmit()       : full validation before submit
                   - Individual validators for each field
-  ================================================================
+  
 */
 
-/* ================================================================
+/* 
    UTILITY: clearError
    Removes any inline error message next to a field.
    Called oninput on each field so errors clear as the user types.
-   ================================================================ */
+     */
 function clearError(errId) {
   var el = document.getElementById(errId);
   if (el) {
@@ -35,10 +35,10 @@ function clearError(errId) {
   }
 }
 
-/* ================================================================
+/* 
    UTILITY: showError
    Displays an inline error message next to a field.
-   ================================================================ */
+    */
 function showError(errId, message) {
   var el = document.getElementById(errId);
   if (el) {
@@ -47,11 +47,11 @@ function showError(errId, message) {
   }
 }
 
-/* ================================================================
+/* 
    UTILITY: clearReview
    Resets the review panel back to placeholder text.
    Called when the "Start Over" reset button is clicked.
-   ================================================================ */
+   */
 function clearReview() {
   var body = document.getElementById("review-body");
   if (body) {
@@ -59,11 +59,11 @@ function clearReview() {
   }
 }
 
-/* ================================================================
+/* 
    USER ID: convertLowercase
    Called onblur — converts the User ID field value to all lowercase
    and re-displays the corrected version in the field.
-   ================================================================ */
+    */
 function convertLowercase() {
   var field = document.getElementById("userid");
   if (field) {
@@ -71,11 +71,11 @@ function convertLowercase() {
   }
 }
 
-/* ================================================================
+/* 
    SLIDERS: updateSlider
    Generic live-display for range sliders.
    Updates the element with id=displayId to show the current value.
-   ================================================================ */
+    */
 function updateSlider(sliderId, displayId, decimals, suffix) {
   var slider  = document.getElementById(sliderId);
   var display = document.getElementById(displayId);
@@ -84,11 +84,11 @@ function updateSlider(sliderId, displayId, decimals, suffix) {
   }
 }
 
-/* ================================================================
+/* 
    SLIDERS: updateSalarySlider
    Live-display for the salary range slider.
    Formats the value as $XX,XXX with commas.
-   ================================================================ */
+    */
 function updateSalarySlider() {
   var slider  = document.getElementById("salaryBar");
   var display = document.getElementById("salaryVal");
@@ -99,12 +99,12 @@ function updateSalarySlider() {
   }
 }
 
-/* ================================================================
+/* 
    PASSWORD: checkPasswordStrength
    Called oninput on the password field.
    Checks for length, uppercase, lowercase, digit, special char.
    Updates a visual strength bar and label.
-   ================================================================ */
+    */
 function checkPasswordStrength() {
   var pwd   = document.getElementById("passid").value;
   var bar   = document.getElementById("strength-bar");
@@ -140,11 +140,11 @@ function checkPasswordStrength() {
   label.style.color         = color;
 }
 
-/* ================================================================
+/* 
    PASSWORD: checkPasswordMatch
    Called oninput on the re-enter password field.
    Gives live feedback on whether the two passwords match.
-   ================================================================ */
+    */
 function checkPasswordMatch() {
   var p1    = document.getElementById("passid").value;
   var p2    = document.getElementById("passid2").value;
@@ -164,13 +164,13 @@ function checkPasswordMatch() {
   }
 }
 
-/* ================================================================
+/* 
    REVIEW PANEL: showReview
    Called when the "Review My Info" button is clicked.
    Reads all field values, validates them, and builds an HTML
    review table using <div> and <span> tags — does NOT reload page.
    ZIP is truncated to 5 digits per assignment spec.
-   ================================================================ */
+   */
 function showReview() {
   var frm  = document.patientForm;
   var body = document.getElementById("review-body");
@@ -402,11 +402,11 @@ function showReview() {
   document.getElementById("review-panel").scrollIntoView({behavior: "smooth", block: "start"});
 }
 
-/* ================================================================
+/* 
    MAIN FORM SUBMIT HANDLER: handleSubmit
    Called on form onsubmit. Runs all validations and shows inline
    error messages. Returns false to stop submission if any fail.
-   ================================================================ */
+    */
 function handleSubmit() {
   var frm    = document.patientForm;
   var valid  = true;
@@ -544,6 +544,6 @@ function getRadioValue(groupName) {
   return "";
 }
 
-/* ================================================================
+/* 
    END OF VALIDATION.JS  (HW2)
-   ================================================================ */
+    */
