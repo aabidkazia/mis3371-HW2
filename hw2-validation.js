@@ -1,549 +1,606 @@
-/*
+@@ -0,0 +1,605 @@
+<!DOCTYPE html>
+<!--
   ================================================================
-  Program name:   validation.js  (Homework 2)
+  Program name:   patient-form.html  (Homework 2)
   Author:         Student Name
   Date created:   March 27, 2026
   Date last edited: March 27, 2026
   Version:        2.0
-  Description:    External JavaScript for We'R'Docs Medical patient
-                  registration form (HW2). Contains:
-                  - initPage()           : sets dynamic date + DOB limits
-                  - clearError()         : removes inline error messages
-                  - clearReview()        : resets the review panel
-                  - convertLowercase()   : auto-lowercases User ID on blur
-                  - updateSlider()       : live health-score display
-                  - updateSalarySlider() : live formatted salary display
-                  - checkPasswordStrength(): live strength meter
-                  - checkPasswordMatch() : live password match indicator
-                  - showReview()         : builds the review panel without
-                                          reloading the page
-                  - handleSubmit()       : full validation before submit
-                  - Individual validators for each field
+  Description:    We'R'Docs Medical Center — New Patient Registration
+                  Form. Built on HW1. Adds: HTML5 pattern validation
+                  on all fields, title attributes for context help,
+                  live password strength checking, salary/health
+                  slide bars with dynamic JS display, a "Review"
+                  button that redisplays all entered data in a review
+                  panel without reloading the page, and lowercase
+                  conversion of the User ID field.
+                  External CSS: style.css
+                  External JS:  validation.js
   ================================================================
-*/
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We'R'Docs Medical &ndash; New Patient Registration</title>
+  <link href="style.css" rel="stylesheet">
+  <script src="validation.js"></script>
+</head>
 
-/* ================================================================
-   UTILITY: clearError
-   Removes any inline error message next to a field.
-   Called oninput on each field so errors clear as the user types.
-   ================================================================ */
-function clearError(errId) {
-  var el = document.getElementById(errId);
-  if (el) {
-    el.textContent = "";
-    el.style.display = "none";
+<body onload="initPage();">
+
+<!-- ================================================================
+     BANNER / HEADER
+     ================================================================ -->
+<div id="banner">
+  <div id="banner-logo">
+    <svg width="72" height="72" viewBox="0 0 72 72"
+         xmlns="http://www.w3.org/2000/svg" aria-label="We'R'Docs Medical Logo" role="img">
+      <circle cx="36" cy="36" r="34" fill="#1a56db" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+      <rect x="29" y="14" width="14" height="44" rx="5" fill="#ffffff"/>
+      <rect x="14" y="29" width="44" height="14" rx="5" fill="#ffffff"/>
+    </svg>
+  </div>
+  <div id="banner-text">
+    <h1>We&#39;R&#39;Docs Medical Center</h1>
+    <p id="dynamic-date"></p>
+    <p id="banner-tagline">Caring for You &mdash; Body, Mind &amp; Spirit</p>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE WRAPPER — two-column layout (form left, review right)
+     ================================================================ -->
+<div id="page-wrapper">
+
+<!-- ================================================================
+     MAIN FORM COLUMN
+     ================================================================ -->
+<div id="main-content">
+
+  <h2>New Patient Registration</h2>
+  <p class="form-intro">
+    Fields marked <span class="req">*</span> are required.
+    Hover over any field for instructions. Use <kbd>Tab</kbd> to move between fields.
+  </p>
+
+  <form name="patientForm" id="patientForm"
+        onsubmit="return handleSubmit();"
+        action="thankyou.html"
+        novalidate>
+
+    <!-- ============================================================
+         BLOCK 1 — PERSONAL INFORMATION
+         ============================================================ -->
+    <fieldset>
+      <legend>&#128100; Block 1 &mdash; Personal Information</legend>
+      <table class="form-table">
+
+        <!-- First Name / MI / Last Name — same row -->
+        <tr>
+          <td class="lbl"><label for="fname">Name <span class="req">*</span></label></td>
+          <td>
+            <!-- First Name: 1-30 chars, letters/apostrophes/dashes only -->
+            <input type="text" id="fname" name="fname"
+                   maxlength="30" size="16"
+                   placeholder="First Name"
+                   tabindex="1"
+                   title="First Name: 1 to 30 characters. Letters, apostrophes, and dashes only. No numbers."
+                   pattern="[A-Za-z'\-]{1,30}"
+                   required
+                   oninput="clearError('fname-err')">
+            <span class="err-msg" id="fname-err"></span>
+            &nbsp;
+            <label for="mi" class="inline-lbl">MI</label>
+            <!-- Middle Initial: exactly 1 letter, optional -->
+            <input type="text" id="mi" name="mi"
+                   maxlength="1" size="2"
+                   placeholder="M"
+                   tabindex="2"
+                   title="Middle Initial: 1 letter only. This field is optional."
+                   pattern="[A-Za-z]"
+                   style="width:2.8em;text-align:center;"
+                   oninput="clearError('mi-err')">
+            <span class="err-msg" id="mi-err"></span>
+            &nbsp;
+            <label for="lname" class="inline-lbl">Last <span class="req">*</span></label>
+            <!-- Last Name: 1-30 chars, letters/apostrophes/numbers 2-5/dashes -->
+            <input type="text" id="lname" name="lname"
+                   maxlength="30" size="16"
+                   placeholder="Last Name"
+                   tabindex="3"
+                   title="Last Name: 1 to 30 characters. Letters, apostrophes, dashes, and suffix numbers (2nd–5th) only."
+                   pattern="[A-Za-z'\-0-9\s]{1,30}"
+                   required
+                   oninput="clearError('lname-err')">
+            <span class="err-msg" id="lname-err"></span>
+          </td>
+        </tr>
+
+        <!-- Date of Birth: MM/DD/YYYY with min/max enforced by JS -->
+        <tr>
+          <td class="lbl"><label for="dob">Date of Birth <span class="req">*</span></label></td>
+          <td>
+            <!-- Using type="date" for browser date-picker; min/max set by initPage() -->
+            <input type="date" id="dob" name="dob"
+                   tabindex="4"
+                   title="Date of Birth: Must be a real past date. Cannot be in the future or more than 120 years ago."
+                   required
+                   oninput="clearError('dob-err')">
+            <span class="err-msg" id="dob-err"></span>
+            <span class="hint">Must be between 120 years ago and today.</span>
+          </td>
+        </tr>
+
+        <!-- Social Security — obscured, password style -->
+        <tr>
+          <td class="lbl"><label for="ssn">Social Security # <span class="req">*</span></label></td>
+          <td>
+            <!-- type="password" obscures digits as *** on screen -->
+            <input type="password" id="ssn" name="ssn"
+                   maxlength="11" size="14"
+                   placeholder="XXX-XX-XXXX"
+                   tabindex="5"
+                   title="Social Security Number: Enter in XXX-XX-XXXX format. This field is obscured for your security."
+                   pattern="\d{3}-?\d{2}-?\d{4}"
+                   required
+                   oninput="clearError('ssn-err')">
+            <span class="err-msg" id="ssn-err"></span>
+            <span class="hint">&#128274; Obscured for security. Format: XXX-XX-XXXX</span>
+          </td>
+        </tr>
+
+      </table>
+    </fieldset>
+
+    <!-- ============================================================
+         BLOCK 2 — CONTACT INFORMATION
+         ============================================================ -->
+    <fieldset>
+      <legend>&#128222; Block 2 &mdash; Contact Information</legend>
+      <table class="form-table">
+
+        <!-- Email -->
+        <tr>
+          <td class="lbl"><label for="email">Email Address <span class="req">*</span></label></td>
+          <td>
+            <input type="text" id="email" name="email"
+                   maxlength="80" size="34"
+                   placeholder="name@domain.com"
+                   tabindex="6"
+                   title="Email Address: Must be in the format name@domain.tld — example: john@gmail.com"
+                   pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                   required
+                   oninput="clearError('email-err')">
+            <span class="err-msg" id="email-err"></span>
+          </td>
+        </tr>
+
+        <!-- Phone -->
+        <tr>
+          <td class="lbl"><label for="phone">Phone Number <span class="req">*</span></label></td>
+          <td>
+            <!-- Pattern enforces NNN-NNN-NNNN format -->
+            <input type="text" id="phone" name="phone"
+                   maxlength="12" size="14"
+                   placeholder="713-555-1234"
+                   tabindex="7"
+                   title="Phone Number: Enter in the format NNN-NNN-NNNN (digits and dashes only). Example: 713-555-1234"
+                   pattern="\d{3}-\d{3}-\d{4}"
+                   required
+                   oninput="clearError('phone-err')">
+            <span class="err-msg" id="phone-err"></span>
+            <span class="hint">Format: NNN-NNN-NNNN</span>
+          </td>
+        </tr>
+
+      </table>
+    </fieldset>
+
+    <!-- ============================================================
+         BLOCK 3 — ADDRESS
+         ============================================================ -->
+    <fieldset>
+      <legend>&#127968; Block 3 &mdash; Home Address</legend>
+      <table class="form-table">
+
+        <tr>
+          <td class="lbl"><label for="addr1">Address Line 1 <span class="req">*</span></label></td>
+          <td>
+            <input type="text" id="addr1" name="addr1"
+                   maxlength="30" size="34"
+                   placeholder="Street number and name"
+                   tabindex="8"
+                   title="Address Line 1: Required. 2 to 30 characters. Enter your street number and street name."
+                   minlength="2"
+                   required
+                   oninput="clearError('addr1-err')">
+            <span class="err-msg" id="addr1-err"></span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="lbl"><label for="addr2">Address Line 2</label></td>
+          <td>
+            <input type="text" id="addr2" name="addr2"
+                   maxlength="30" size="34"
+                   placeholder="Apt, Suite, Unit (optional)"
+                   tabindex="9"
+                   title="Address Line 2: Optional. If entered, must be 2 to 30 characters. Use for Apt, Suite, or Unit numbers."
+                   minlength="2"
+                   oninput="clearError('addr2-err')">
+            <span class="err-msg" id="addr2-err"></span>
+          </td>
+        </tr>
+
+        <!-- City / State / ZIP on same row -->
+        <tr>
+          <td class="lbl"><label for="city">City / State / ZIP <span class="req">*</span></label></td>
+          <td>
+            <input type="text" id="city" name="city"
+                   maxlength="30" size="18"
+                   placeholder="City"
+                   tabindex="10"
+                   title="City: Required. 2 to 30 characters. Letters and spaces only."
+                   pattern="[A-Za-z\s\-\.]{2,30}"
+                   required
+                   oninput="clearError('city-err')">
+            <span class="err-msg" id="city-err"></span>
+            &nbsp;
+            <label for="state" class="inline-lbl">State <span class="req">*</span></label>
+            <select id="state" name="state" tabindex="11"
+                    title="State: Required. Select your state from the dropdown list."
+                    onchange="clearError('state-err')">
+              <option value="">(State)</option>
+              <option value="AL">AL</option><option value="AK">AK</option>
+              <option value="AZ">AZ</option><option value="AR">AR</option>
+              <option value="CA">CA</option><option value="CO">CO</option>
+              <option value="CT">CT</option><option value="DE">DE</option>
+              <option value="DC">DC</option><option value="FL">FL</option>
+              <option value="GA">GA</option><option value="HI">HI</option>
+              <option value="ID">ID</option><option value="IL">IL</option>
+              <option value="IN">IN</option><option value="IA">IA</option>
+              <option value="KS">KS</option><option value="KY">KY</option>
+              <option value="LA">LA</option><option value="ME">ME</option>
+              <option value="MD">MD</option><option value="MA">MA</option>
+              <option value="MI">MI</option><option value="MN">MN</option>
+              <option value="MS">MS</option><option value="MO">MO</option>
+              <option value="MT">MT</option><option value="NE">NE</option>
+              <option value="NV">NV</option><option value="NH">NH</option>
+              <option value="NJ">NJ</option><option value="NM">NM</option>
+              <option value="NY">NY</option><option value="NC">NC</option>
+              <option value="ND">ND</option><option value="OH">OH</option>
+              <option value="OK">OK</option><option value="OR">OR</option>
+              <option value="PA">PA</option><option value="PR">PR</option>
+              <option value="RI">RI</option><option value="SC">SC</option>
+              <option value="SD">SD</option><option value="TN">TN</option>
+              <option value="TX" selected>TX</option><option value="UT">UT</option>
+              <option value="VT">VT</option><option value="VA">VA</option>
+              <option value="WA">WA</option><option value="WV">WV</option>
+              <option value="WI">WI</option><option value="WY">WY</option>
+            </select>
+            <span class="err-msg" id="state-err"></span>
+            &nbsp;
+            <label for="zip" class="inline-lbl">ZIP <span class="req">*</span></label>
+            <!-- ZIP: 5 digits required; up to 10 with dash for ZIP+4; will be truncated to 5 on review -->
+            <input type="text" id="zip" name="zip"
+                   maxlength="10" size="10"
+                   placeholder="77496"
+                   tabindex="12"
+                   title="ZIP Code: Required. Enter 5 digits (e.g. 77496). You may include ZIP+4 (e.g. 77496-1234) — it will be truncated to 5 digits on review."
+                   pattern="\d{5}(-\d{4})?"
+                   required
+                   oninput="clearError('zip-err')">
+            <span class="err-msg" id="zip-err"></span>
+          </td>
+        </tr>
+
+      </table>
+    </fieldset>
+
+    <!-- ============================================================
+         BLOCK 4 — CHOICES (checkboxes, radios, sliders, textarea)
+         ============================================================ -->
+    <fieldset>
+      <legend>&#9745; Block 4 &mdash; Health &amp; Preferences</legend>
+
+      <!-- CHECKBOXES — medical history -->
+      <p class="section-note">Check ALL that apply to your medical history:</p>
+      <table class="form-table">
+        <tr>
+          <td class="lbl">Have you had&hellip;</td>
+          <td class="checkbox-group">
+            <label class="cb-label" title="Check if you have previously had Chicken Pox">
+              <input type="checkbox" name="hx_chickenpox" value="chickenpox"> Chicken Pox
+            </label>
+            <label class="cb-label" title="Check if you have previously had Measles">
+              <input type="checkbox" name="hx_measles" value="measles"> Measles
+            </label>
+            <label class="cb-label" title="Check if you have previously had COVID-19">
+              <input type="checkbox" name="hx_covid" value="covid"> COVID-19
+            </label>
+            <label class="cb-label" title="Check if you have previously had Small Pox">
+              <input type="checkbox" name="hx_smallpox" value="smallpox"> Small Pox
+            </label>
+            <label class="cb-label" title="Check if you have received a Tetanus vaccination">
+              <input type="checkbox" name="hx_tetanus" value="tetanus"> Tetanus Shot
+            </label>
+            <label class="cb-label" title="Check if you receive an annual Flu Shot">
+              <input type="checkbox" name="hx_flu" value="flu"> Flu Shot (Annual)
+            </label>
+            <label class="cb-label" title="Check if you have received the Hepatitis B vaccine">
+              <input type="checkbox" name="hx_hepb" value="hepb"> Hepatitis B
+            </label>
+          </td>
+        </tr>
+      </table>
+
+      <!-- RADIO BUTTONS -->
+      <table class="form-table" style="margin-top:10px;">
+        <!-- Radio Set 1: Gender -->
+        <tr>
+          <td class="lbl">Gender <span class="req">*</span></td>
+          <td class="radio-group">
+            <label class="rb-label" title="Select Male for gender">
+              <input type="radio" name="gender" value="Male"> Male
+            </label>
+            <label class="rb-label" title="Select Female for gender">
+              <input type="radio" name="gender" value="Female"> Female
+            </label>
+            <label class="rb-label" title="Select if you prefer not to specify a gender">
+              <input type="radio" name="gender" value="Other"> Other / Prefer not to say
+            </label>
+          </td>
+        </tr>
+        <!-- Radio Set 2: Vaccinated -->
+        <tr>
+          <td class="lbl">Fully Vaccinated? <span class="req">*</span></td>
+          <td class="radio-group">
+            <label class="rb-label" title="Select Yes if you are fully vaccinated against COVID-19">
+              <input type="radio" name="vaccinated" value="Yes"> Yes
+            </label>
+            <label class="rb-label" title="Select No if you are not fully vaccinated">
+              <input type="radio" name="vaccinated" value="No"> No
+            </label>
+          </td>
+        </tr>
+        <!-- Radio Set 3: Insurance -->
+        <tr>
+          <td class="lbl">Has Insurance? <span class="req">*</span></td>
+          <td class="radio-group">
+            <label class="rb-label" title="Select Yes if you currently have health insurance coverage">
+              <input type="radio" name="insurance" value="Yes"> Yes
+            </label>
+            <label class="rb-label" title="Select No if you do not currently have health insurance">
+              <input type="radio" name="insurance" value="No"> No
+            </label>
+          </td>
+        </tr>
+      </table>
+
+      <!-- SLIDE BAR 1: Health Score (1–10) -->
+      <table class="form-table" style="margin-top:12px;">
+        <tr>
+          <td class="lbl">
+            <label for="healthScore">Overall Health <span class="req">*</span></label>
+          </td>
+          <td>
+            <div class="slider-row">
+              <span class="slider-end">1<br><small>Poor</small></span>
+              <input type="range" id="healthScore" name="healthScore"
+                     min="1" max="10" value="5" step="1"
+                     tabindex="13"
+                     title="Overall Health Score: Slide to rate your health from 1 (very poor) to 10 (excellent)."
+                     oninput="updateSlider('healthScore','healthVal', 1, '')">
+              <span class="slider-end">10<br><small>Excellent</small></span>
+              <span class="slider-current">Score: <strong id="healthVal">5</strong> / 10</span>
+            </div>
+          </td>
+        </tr>
+
+        <!-- SLIDE BAR 2: Desired Salary ($20,000 – $200,000) — NEW for HW2 -->
+        <tr>
+          <td class="lbl">
+            <label for="salaryBar">Desired Salary</label>
+          </td>
+          <td>
+            <div class="slider-row">
+              <span class="slider-end">$20k<br><small>Min</small></span>
+              <input type="range" id="salaryBar" name="salaryBar"
+                     min="20000" max="200000" value="60000" step="5000"
+                     tabindex="14"
+                     title="Desired Annual Salary: Slide to select your desired annual salary range from $20,000 to $200,000."
+                     oninput="updateSalarySlider()">
+              <span class="slider-end">$200k<br><small>Max</small></span>
+              <span class="slider-current"><strong id="salaryVal">$60,000</strong> / yr</span>
+            </div>
+            <span class="hint">Slide to indicate your preferred annual salary range.</span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- TEXTAREA: Symptoms -->
+      <table class="form-table" style="margin-top:8px;">
+        <tr>
+          <td class="lbl"><label for="symptoms">Describe Symptoms</label></td>
+          <td>
+            <!-- Note: pattern avoids double-quotes which can break DB -->
+            <textarea id="symptoms" name="symptoms"
+                      rows="5" cols="55"
+                      tabindex="15"
+                      title="Current Symptoms: Optional. Describe your symptoms, how long you have had them, and their severity. Please do not use quotation marks."
+                      placeholder="Describe your current symptoms, duration, and severity. (Optional — no quotation marks please)"
+                      pattern='[^"]*'></textarea>
+            <span class="hint">Optional. Avoid using quotation marks &quot; in this field.</span>
+          </td>
+        </tr>
+      </table>
+
+    </fieldset>
+
+    <!-- ============================================================
+         BLOCK 5 — ACCOUNT CREDENTIALS
+         ============================================================ -->
+    <fieldset>
+      <legend>&#128274; Block 5 &mdash; Account Credentials</legend>
+      <table class="form-table">
+
+        <!-- User ID -->
+        <tr>
+          <td class="lbl"><label for="userid">User ID <span class="req">*</span></label></td>
+          <td>
+            <!-- Converted to lowercase automatically on blur/submit -->
+            <input type="text" id="userid" name="userid"
+                   maxlength="30" size="24"
+                   placeholder="Choose a username"
+                   tabindex="16"
+                   title="User ID: 5 to 30 characters. Letters, numbers, underscore or dash only. Must start with a letter. NO spaces. Will be converted to lowercase automatically."
+                   pattern="[A-Za-z][A-Za-z0-9_\-]{4,29}"
+                   required
+                   oninput="clearError('userid-err')"
+                   onblur="convertLowercase()">
+            <span class="err-msg" id="userid-err"></span>
+            <span class="hint">5–30 chars. Letters/numbers/underscore/dash. Must start with a letter. No spaces. Auto-converted to lowercase.</span>
+          </td>
+        </tr>
+
+        <!-- Password -->
+        <tr>
+          <td class="lbl"><label for="passid">Password <span class="req">*</span></label></td>
+          <td>
+            <!-- type="password" obscures characters as *** -->
+            <input type="password" id="passid" name="passid"
+                   maxlength="30" size="24"
+                   placeholder="Min 8 characters"
+                   tabindex="17"
+                   title="Password: 8 to 30 characters. Must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (!@#%^&amp;*()-_+=). No quotation marks allowed."
+                   required
+                   oninput="checkPasswordStrength(); clearError('passid-err')">
+            <span class="err-msg" id="passid-err"></span>
+            <!-- Live password strength indicator -->
+            <div id="strength-bar-wrap">
+              <div id="strength-bar"></div>
+            </div>
+            <span id="strength-label" class="hint"></span>
+          </td>
+        </tr>
+
+        <!-- Re-enter Password -->
+        <tr>
+          <td class="lbl"><label for="passid2">Re-enter Password <span class="req">*</span></label></td>
+          <td>
+            <input type="password" id="passid2" name="passid2"
+                   maxlength="30" size="24"
+                   placeholder="Repeat password"
+                   tabindex="18"
+                   title="Re-enter Password: Must exactly match the password you entered above."
+                   required
+                   oninput="checkPasswordMatch(); clearError('passid2-err')">
+            <span class="err-msg" id="passid2-err"></span>
+            <span id="match-label" class="hint"></span>
+          </td>
+        </tr>
+
+      </table>
+    </fieldset>
+
+    <!-- ── ACTION BUTTONS ──────────────────────────────────────── -->
+    <div id="form-buttons">
+      <!-- Review button: shows entered data WITHOUT submitting -->
+      <input type="button" id="btn-review" value="&#128269; Review My Info"
+             tabindex="19"
+             onclick="showReview();">
+      <!-- Reset clears all fields -->
+      <input type="reset"  id="btn-reset"  value="&#10006; Start Over"
+             tabindex="20"
+             onclick="clearReview();">
+      <!-- Submit: runs full JS validation then goes to thankyou.html -->
+      <input type="submit" id="btn-submit" value="&#10004; Submit Registration"
+             tabindex="21">
+    </div>
+
+  </form>
+</div><!-- end #main-content -->
+
+<!-- ================================================================
+     REVIEW PANEL — shown to the right / below when Review clicked
+     Uses <div> and <span> tags; does NOT rewrite the page
+     ================================================================ -->
+<div id="review-panel">
+  <div id="review-header">
+    <h3>&#128203; Please Review This Information</h3>
+    <p class="review-subhead">Check your entries below before submitting. Fields with errors are marked in red.</p>
+  </div>
+  <div id="review-body">
+    <!-- Populated dynamically by showReview() in validation.js -->
+    <p class="review-placeholder">Click <strong>&#128269; Review My Info</strong> to see a summary of your entries here.</p>
+  </div>
+</div>
+
+</div><!-- end #page-wrapper -->
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<div id="footer">
+  <div id="footer-left">
+    <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="15" cy="15" r="14" fill="#1a56db"/>
+      <rect x="11" y="4"  width="8"  height="22" rx="3" fill="#fff"/>
+      <rect x="4"  y="11" width="22" height="8"  rx="3" fill="#fff"/>
+    </svg>
+    <span class="footer-brand">We&#39;R&#39;Docs Medical</span>
+  </div>
+  <div id="footer-center">
+    <button type="button" id="btn-contact"
+            onclick="alert('We\'R\'Docs Medical Center\nPhone: (713) 555-9100\nEmail: info@werdocs.com\n\nFor medical emergencies, call 911.');">
+      &#128222; Contact Us
+    </button>
+    <div id="social-links">
+      <a href="https://www.facebook.com"  target="_blank" rel="noopener">Facebook</a>
+      <span class="sep">|</span>
+      <a href="https://www.twitter.com"   target="_blank" rel="noopener">Twitter / X</a>
+      <span class="sep">|</span>
+      <a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+  <div id="footer-right">
+    PO BOX 18881<br>Sugar Land, TX &nbsp;77496<br>
+    &copy; <span id="footer-year"></span> We&#39;R&#39;Docs Medical Center. All rights reserved.
+  </div>
+</div>
+
+<!-- ================================================================
+     INLINE JS — dynamic date, footer year, DOB min/max dates
+     ================================================================ -->
+<script>
+  /* initPage() — called onload. Sets dynamic date + DOB date limits */
+  function initPage() {
+    /* -- Dynamic banner date -- */
+    var days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var months = ["January","February","March","April","May","June",
+                  "July","August","September","October","November","December"];
+    var now = new Date();
+    var d   = now.getDate();
+    var sfx = (d===1||d===21||d===31)?"st":(d===2||d===22)?"nd":(d===3||d===23)?"rd":"th";
+    document.getElementById("dynamic-date").innerHTML =
+      "Today is: <strong>" + days[now.getDay()] + ", " +
+      months[now.getMonth()] + " " + d + sfx + ", " + now.getFullYear() + "</strong>";
+    document.getElementById("footer-year").textContent = now.getFullYear();
+
+    /* -- Set DOB min (120 years ago) and max (today) dynamically -- */
+    var maxDate = now.toISOString().split("T")[0];          /* today */
+    var minYear = new Date();
+    minYear.setFullYear(now.getFullYear() - 120);
+    var minDate = minYear.toISOString().split("T")[0];      /* 120 yrs ago */
+    document.getElementById("dob").setAttribute("max", maxDate);
+    document.getElementById("dob").setAttribute("min", minDate);
   }
-}
-
-/* ================================================================
-   UTILITY: showError
-   Displays an inline error message next to a field.
-   ================================================================ */
-function showError(errId, message) {
-  var el = document.getElementById(errId);
-  if (el) {
-    el.textContent = message;
-    el.style.display = "inline";
-  }
-}
-
-/* ================================================================
-   UTILITY: clearReview
-   Resets the review panel back to placeholder text.
-   Called when the "Start Over" reset button is clicked.
-   ================================================================ */
-function clearReview() {
-  var body = document.getElementById("review-body");
-  if (body) {
-    body.innerHTML = '<p class="review-placeholder">Click <strong>&#128269; Review My Info</strong> to see a summary of your entries here.</p>';
-  }
-}
-
-/* ================================================================
-   USER ID: convertLowercase
-   Called onblur — converts the User ID field value to all lowercase
-   and re-displays the corrected version in the field.
-   ================================================================ */
-function convertLowercase() {
-  var field = document.getElementById("userid");
-  if (field) {
-    field.value = field.value.toLowerCase();
-  }
-}
-
-/* ================================================================
-   SLIDERS: updateSlider
-   Generic live-display for range sliders.
-   Updates the element with id=displayId to show the current value.
-   ================================================================ */
-function updateSlider(sliderId, displayId, decimals, suffix) {
-  var slider  = document.getElementById(sliderId);
-  var display = document.getElementById(displayId);
-  if (slider && display) {
-    display.textContent = parseFloat(slider.value).toFixed(decimals) + suffix;
-  }
-}
-
-/* ================================================================
-   SLIDERS: updateSalarySlider
-   Live-display for the salary range slider.
-   Formats the value as $XX,XXX with commas.
-   ================================================================ */
-function updateSalarySlider() {
-  var slider  = document.getElementById("salaryBar");
-  var display = document.getElementById("salaryVal");
-  if (slider && display) {
-    var val = parseInt(slider.value, 10);
-    /* Format with $ and commas */
-    display.textContent = "$" + val.toLocaleString("en-US");
-  }
-}
-
-/* ================================================================
-   PASSWORD: checkPasswordStrength
-   Called oninput on the password field.
-   Checks for length, uppercase, lowercase, digit, special char.
-   Updates a visual strength bar and label.
-   ================================================================ */
-function checkPasswordStrength() {
-  var pwd   = document.getElementById("passid").value;
-  var bar   = document.getElementById("strength-bar");
-  var label = document.getElementById("strength-label");
-  if (!bar || !label) { return; }
-
-  if (pwd.length === 0) {
-    bar.style.width = "0%";
-    bar.style.backgroundColor = "#ccc";
-    label.textContent = "";
-    return;
-  }
-
-  var score = 0;
-  if (pwd.length >= 8)                      { score++; }  /* min length */
-  if (pwd.length >= 12)                     { score++; }  /* good length */
-  if (/[A-Z]/.test(pwd))                   { score++; }  /* uppercase */
-  if (/[a-z]/.test(pwd))                   { score++; }  /* lowercase */
-  if (/[0-9]/.test(pwd))                   { score++; }  /* digit */
-  if (/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) { score++; }  /* special char */
-
-  var pct   = Math.round((score / 6) * 100);
-  var color = score <= 2 ? "#e74c3c"   /* weak — red */
-            : score <= 4 ? "#f39c12"   /* fair — orange */
-            :              "#27ae60";  /* strong — green */
-  var text  = score <= 2 ? "Weak — add uppercase, numbers, and special characters"
-            : score <= 4 ? "Fair — try adding more variety"
-            :              "Strong password ✔";
-
-  bar.style.width           = pct + "%";
-  bar.style.backgroundColor = color;
-  label.textContent         = text;
-  label.style.color         = color;
-}
-
-/* ================================================================
-   PASSWORD: checkPasswordMatch
-   Called oninput on the re-enter password field.
-   Gives live feedback on whether the two passwords match.
-   ================================================================ */
-function checkPasswordMatch() {
-  var p1    = document.getElementById("passid").value;
-  var p2    = document.getElementById("passid2").value;
-  var label = document.getElementById("match-label");
-  if (!label) { return; }
-
-  if (p2.length === 0) {
-    label.textContent = "";
-    return;
-  }
-  if (p1 === p2) {
-    label.textContent = "✔ Passwords match";
-    label.style.color = "#27ae60";
-  } else {
-    label.textContent = "✖ Passwords do not match";
-    label.style.color = "#e74c3c";
-  }
-}
-
-/* ================================================================
-   REVIEW PANEL: showReview
-   Called when the "Review My Info" button is clicked.
-   Reads all field values, validates them, and builds an HTML
-   review table using <div> and <span> tags — does NOT reload page.
-   ZIP is truncated to 5 digits per assignment spec.
-   ================================================================ */
-function showReview() {
-  var frm  = document.patientForm;
-  var body = document.getElementById("review-body");
-  if (!body) { return; }
-
-  /* -- Helper: build one review row -- */
-  function row(label, value, status, note) {
-    var statusClass = status === "ERROR" ? "rv-error" : "rv-pass";
-    var statusIcon  = status === "ERROR" ? "&#10008; ERROR" : "&#10004; OK";
-    var noteStr     = note ? '<span class="rv-note">' + note + '</span>' : "";
-    return '<div class="rv-row">'
-         + '<span class="rv-label">' + label + '</span>'
-         + '<span class="rv-value">' + (value || '<em>— not entered —</em>') + '</span>'
-         + '<span class="rv-status ' + statusClass + '">' + statusIcon + '</span>'
-         + noteStr
-         + '</div>';
-  }
-
-  /* -- Helper: checked checkboxes as a comma-separated list -- */
-  function getChecked(names) {
-    var results = [];
-    for (var i = 0; i < names.length; i++) {
-      var cb = document.querySelector('input[name="' + names[i].name + '"]');
-      var boxes = document.querySelectorAll('input[name="' + names[i].name + '"]');
-      /* each name is unique, find the specific one */
-      var el = document.querySelector('input[name="' + names[i].name + '"]');
-      if (el && el.checked) { results.push(names[i].label); }
-    }
-    return results.length > 0 ? results.join(", ") : "None selected";
-  }
-
-  /* -- Helper: get selected radio value -- */
-  function getRadio(groupName) {
-    var radios = document.getElementsByName(groupName);
-    for (var i = 0; i < radios.length; i++) {
-      if (radios[i].checked) { return radios[i].value; }
-    }
-    return "";
-  }
-
-  /* ── Read all field values ── */
-  var fname    = frm.fname.value.trim();
-  var mi       = frm.mi.value.trim();
-  var lname    = frm.lname.value.trim();
-  var dob      = frm.dob.value;
-  var ssn      = frm.ssn.value.trim();
-  var email    = frm.email.value.trim();
-  var phone    = frm.phone.value.trim();
-  var addr1    = frm.addr1.value.trim();
-  var addr2    = frm.addr2.value.trim();
-  var city     = frm.city.value.trim();
-  var state    = frm.state.value;
-  var zipRaw   = frm.zip.value.trim();
-  var zipShort = zipRaw.substring(0, 5);   /* truncate to 5 digits */
-  var gender   = getRadio("gender");
-  var vaccin   = getRadio("vaccinated");
-  var insur    = getRadio("insurance");
-  var health   = frm.healthScore.value;
-  var salary   = parseInt(frm.salaryBar.value, 10);
-  var symptoms = frm.symptoms.value.trim();
-  var userid   = frm.userid.value.trim().toLowerCase();
-  var pwd      = frm.passid.value;
-  var pwd2     = frm.passid2.value;
-
-  /* -- Checkbox list -- */
-  var cbNames = [
-    {name:"hx_chickenpox", label:"Chicken Pox"},
-    {name:"hx_measles",    label:"Measles"},
-    {name:"hx_covid",      label:"COVID-19"},
-    {name:"hx_smallpox",   label:"Small Pox"},
-    {name:"hx_tetanus",    label:"Tetanus Shot"},
-    {name:"hx_flu",        label:"Flu Shot"},
-    {name:"hx_hepb",       label:"Hepatitis B"}
-  ];
-  var cbChecked = [];
-  for (var i = 0; i < cbNames.length; i++) {
-    var el = document.querySelector('input[name="' + cbNames[i].name + '"]');
-    if (el && el.checked) { cbChecked.push(cbNames[i].label); }
-  }
-  var cbDisplay = cbChecked.length > 0 ? cbChecked.join(", ") : "None selected";
-
-  /* ── Validate each field for the review panel ── */
-  var nameDisplay = fname + (mi ? " " + mi + "." : "") + " " + lname;
-
-  /* -- Validate: Name -- */
-  var nameStatus = "OK", nameNote = "";
-  if (!fname || !lname) { nameStatus = "ERROR"; nameNote = "First and Last name are required."; }
-
-  /* -- Validate: DOB -- */
-  var dobStatus = "OK", dobNote = "", dobDisplay = dob;
-  if (!dob) {
-    dobStatus = "ERROR"; dobNote = "Date of Birth is required.";
-  } else {
-    var dobObj  = new Date(dob);
-    var today   = new Date();
-    var minDob  = new Date(); minDob.setFullYear(today.getFullYear() - 120);
-    if (dobObj > today) { dobStatus = "ERROR"; dobNote = "Cannot be in the future."; }
-    else if (dobObj < minDob) { dobStatus = "ERROR"; dobNote = "Date is more than 120 years ago."; }
-    /* Format as MM/DD/YYYY for display */
-    if (dob) {
-      var parts = dob.split("-");
-      dobDisplay = parts[1] + "/" + parts[2] + "/" + parts[0];
-    }
-  }
-
-  /* -- Validate: SSN (obscure for display) -- */
-  var ssnStatus = "OK", ssnNote = "", ssnDisplay = "***-**-****";
-  if (!ssn || ssn.replace(/\D/g,"").length < 9) { ssnStatus = "ERROR"; ssnNote = "Valid SSN required."; }
-
-  /* -- Validate: Email -- */
-  var emailStatus = "OK", emailNote = "";
-  if (!email || !/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/.test(email)) {
-    emailStatus = "ERROR"; emailNote = "Must be in name@domain.tld format.";
-  }
-
-  /* -- Validate: Phone -- */
-  var phoneStatus = "OK", phoneNote = "";
-  if (!phone || !/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
-    phoneStatus = "ERROR"; phoneNote = "Must be in NNN-NNN-NNNN format.";
-  }
-
-  /* -- Validate: Address -- */
-  var addrStatus = "OK", addrNote = "";
-  if (!addr1 || addr1.length < 2) { addrStatus = "ERROR"; addrNote = "Address Line 1 is required (min 2 chars)."; }
-
-  /* -- Validate: City -- */
-  var cityStatus = "OK", cityNote = "";
-  if (!city || city.length < 2) { cityStatus = "ERROR"; cityNote = "City is required (min 2 chars)."; }
-
-  /* -- Validate: State -- */
-  var stateStatus = "OK", stateNote = "";
-  if (!state) { stateStatus = "ERROR"; stateNote = "Please select a state."; }
-
-  /* -- Validate: ZIP -- */
-  var zipStatus = "OK", zipNote = "";
-  if (!zipRaw || !/^\d{5}(-\d{4})?$/.test(zipRaw)) {
-    zipStatus = "ERROR"; zipNote = "Must be 5 digits (ZIP+4 accepted and will be truncated).";
-  }
-  var zipDisplay = zipRaw ? zipShort + (zipRaw.length > 5 ? " <em>(truncated from " + zipRaw + ")</em>" : "") : "";
-
-  /* -- Validate: Gender -- */
-  var genderStatus = gender ? "OK" : "ERROR";
-  var genderNote   = gender ? "" : "Please select a gender.";
-
-  /* -- Validate: Vaccinated -- */
-  var vaccinStatus = vaccin ? "OK" : "ERROR";
-  var vaccinNote   = vaccin ? "" : "Please answer vaccination question.";
-
-  /* -- Validate: Insurance -- */
-  var insurStatus = insur ? "OK" : "ERROR";
-  var insurNote   = insur ? "" : "Please answer insurance question.";
-
-  /* -- Validate: User ID -- */
-  var useridStatus = "OK", useridNote = "";
-  if (!userid || userid.length < 5 || userid.length > 30) {
-    useridStatus = "ERROR"; useridNote = "User ID must be 5–30 characters.";
-  } else if (!/^[a-z][a-z0-9_\-]{4,29}$/.test(userid)) {
-    useridStatus = "ERROR"; useridNote = "Must start with a letter. Letters, numbers, underscore, dash only. No spaces.";
-  }
-
-  /* -- Validate: Password -- */
-  var pwdStatus = "OK", pwdNote = "";
-  if (!pwd || pwd.length < 8 || pwd.length > 30) {
-    pwdStatus = "ERROR"; pwdNote = "Password must be 8–30 characters.";
-  } else if (!/[A-Z]/.test(pwd)) {
-    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 uppercase letter.";
-  } else if (!/[a-z]/.test(pwd)) {
-    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 lowercase letter.";
-  } else if (!/[0-9]/.test(pwd)) {
-    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 number.";
-  } else if (!/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) {
-    pwdStatus = "ERROR"; pwdNote = "Needs at least 1 special character (!@#%^&*...).";
-  } else if (/"/.test(pwd)) {
-    pwdStatus = "ERROR"; pwdNote = "Password cannot contain quotation marks.";
-  } else if (userid && pwd.toLowerCase().indexOf(userid) !== -1) {
-    pwdStatus = "ERROR"; pwdNote = "Password cannot contain your User ID.";
-  }
-
-  /* -- Validate: Password match -- */
-  var pwd2Status = "OK", pwd2Note = "";
-  if (!pwd2) {
-    pwd2Status = "ERROR"; pwd2Note = "Please re-enter your password.";
-  } else if (pwd !== pwd2) {
-    pwd2Status = "ERROR"; pwd2Note = "Passwords do not match.";
-  }
-
-  /* ── Build the review HTML ── */
-  var html = "";
-
-  /* Section: Personal */
-  html += '<div class="rv-section-title">Personal Information</div>';
-  html += row("Full Name",       nameDisplay, nameStatus, nameNote);
-  html += row("Date of Birth",   dobDisplay,  dobStatus,  dobNote);
-  html += row("Social Security", ssnDisplay,  ssnStatus,  ssnNote);
-
-  /* Section: Contact */
-  html += '<div class="rv-section-title">Contact Information</div>';
-  html += row("Email Address", email, emailStatus, emailNote);
-  html += row("Phone Number",  phone, phoneStatus, phoneNote);
-
-  /* Section: Address */
-  html += '<div class="rv-section-title">Address</div>';
-  var addrFull = addr1 + (addr2 ? "<br>" + addr2 : "") + "<br>" + city + ", " + state + " " + zipDisplay;
-  html += row("Address", addrFull, addrStatus, addrNote);
-  if (cityStatus === "ERROR") { html += row("City",  city,  cityStatus,  cityNote); }
-  if (stateStatus === "ERROR") { html += row("State", state, stateStatus, stateNote); }
-  if (zipStatus === "ERROR")   { html += row("ZIP",   zipRaw, zipStatus,  zipNote); }
-
-  /* Section: Choices */
-  html += '<div class="rv-section-title">Health &amp; Preferences</div>';
-  html += row("Medical History",      cbDisplay,                          "OK", "");
-  html += row("Gender",               gender || "",                        genderStatus, genderNote);
-  html += row("Fully Vaccinated",     vaccin || "",                        vaccinStatus, vaccinNote);
-  html += row("Has Insurance",        insur  || "",                        insurStatus,  insurNote);
-  html += row("Health Score",         health + " / 10",                   "OK", "");
-  html += row("Desired Salary",       "$" + salary.toLocaleString("en-US") + " / yr", "OK", "");
-  html += row("Described Symptoms",   symptoms || "<em>None provided</em>", "OK", "");
-
-  /* Section: Account */
-  html += '<div class="rv-section-title">Account Credentials</div>';
-  html += row("User ID",             userid || "", useridStatus, useridNote);
-  html += row("Password",            pwd ? "&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226; (hidden)" : "", pwdStatus,  pwdNote);
-  html += row("Password Confirmed",  pwd2 ? "&#10004; Entered" : "", pwd2Status, pwd2Note);
-
-  /* Insert into the review panel */
-  body.innerHTML = html;
-
-  /* Scroll the review panel into view smoothly */
-  document.getElementById("review-panel").scrollIntoView({behavior: "smooth", block: "start"});
-}
-
-/* ================================================================
-   MAIN FORM SUBMIT HANDLER: handleSubmit
-   Called on form onsubmit. Runs all validations and shows inline
-   error messages. Returns false to stop submission if any fail.
-   ================================================================ */
-function handleSubmit() {
-  var frm    = document.patientForm;
-  var valid  = true;
-
-  /* Helper: mark a field as invalid */
-  function fail(errId, msg, fieldEl) {
-    showError(errId, msg);
-    if (fieldEl && valid) { fieldEl.focus(); } /* focus first error */
-    valid = false;
-  }
-
-  /* ── Name ── */
-  var fname = frm.fname.value.trim();
-  var lname = frm.lname.value.trim();
-  if (!fname || !/^[A-Za-z'\-]{1,30}$/.test(fname)) {
-    fail("fname-err", "First name: letters, apostrophes, dashes only (1–30 chars).", frm.fname);
-  }
-  if (frm.mi.value && !/^[A-Za-z]$/.test(frm.mi.value)) {
-    fail("mi-err", "Middle initial must be a single letter.", frm.mi);
-  }
-  if (!lname || lname.length < 1 || lname.length > 30) {
-    fail("lname-err", "Last name is required (1–30 characters).", frm.lname);
-  }
-
-  /* ── DOB ── */
-  var dob = frm.dob.value;
-  if (!dob) {
-    fail("dob-err", "Date of Birth is required.", frm.dob);
-  } else {
-    var dobObj = new Date(dob);
-    var today  = new Date();
-    var minDob = new Date(); minDob.setFullYear(today.getFullYear() - 120);
-    if (dobObj > today)  { fail("dob-err", "Date of Birth cannot be in the future.", frm.dob); }
-    if (dobObj < minDob) { fail("dob-err", "Date of Birth cannot be more than 120 years ago.", frm.dob); }
-  }
-
-  /* ── SSN ── */
-  var ssn = frm.ssn.value.trim();
-  if (!ssn || ssn.replace(/\D/g,"").length < 9) {
-    fail("ssn-err", "Valid SSN required (format: XXX-XX-XXXX).", frm.ssn);
-  }
-
-  /* ── Email ── */
-  var email = frm.email.value.trim();
-  if (!email || !/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/.test(email)) {
-    fail("email-err", "Valid email required: name@domain.tld", frm.email);
-  }
-
-  /* ── Phone ── */
-  var phone = frm.phone.value.trim();
-  if (!phone || !/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
-    fail("phone-err", "Phone must be in NNN-NNN-NNNN format.", frm.phone);
-  }
-
-  /* ── Address ── */
-  if (!frm.addr1.value.trim() || frm.addr1.value.trim().length < 2) {
-    fail("addr1-err", "Address Line 1 is required (at least 2 characters).", frm.addr1);
-  }
-  if (frm.addr2.value.trim() && frm.addr2.value.trim().length < 2) {
-    fail("addr2-err", "If entered, Address Line 2 must be at least 2 characters.", frm.addr2);
-  }
-
-  /* ── City ── */
-  var city = frm.city.value.trim();
-  if (!city || city.length < 2) {
-    fail("city-err", "City is required (min 2 characters).", frm.city);
-  }
-
-  /* ── State ── */
-  if (!frm.state.value) {
-    fail("state-err", "Please select a state.", frm.state);
-  }
-
-  /* ── ZIP ── */
-  var zip = frm.zip.value.trim();
-  if (!zip || !/^\d{5}(-\d{4})?$/.test(zip)) {
-    fail("zip-err", "ZIP must be 5 digits or ZIP+4 (e.g. 77496 or 77496-1234).", frm.zip);
-  }
-
-  /* ── Radio groups ── */
-  if (!getRadioValue("gender"))    { fail("gender-err" || "gender",    "Please select a gender.",              null); valid = false; }
-  if (!getRadioValue("vaccinated")){ valid = false; }
-  if (!getRadioValue("insurance")) { valid = false; }
-
-  /* ── User ID ── */
-  var uid = frm.userid.value.trim().toLowerCase();
-  frm.userid.value = uid;  /* enforce lowercase */
-  if (!uid || uid.length < 5 || uid.length > 30) {
-    fail("userid-err", "User ID must be 5–30 characters.", frm.userid);
-  } else if (!/^[a-z][a-z0-9_\-]{4,29}$/.test(uid)) {
-    fail("userid-err", "Must start with a letter. Letters, numbers, underscore, dash. No spaces.", frm.userid);
-  }
-
-  /* ── Password ── */
-  var pwd  = frm.passid.value;
-  var pwd2 = frm.passid2.value;
-  if (!pwd || pwd.length < 8 || pwd.length > 30) {
-    fail("passid-err", "Password must be 8–30 characters.", frm.passid);
-  } else if (!/[A-Z]/.test(pwd)) {
-    fail("passid-err", "Password needs at least 1 uppercase letter.", frm.passid);
-  } else if (!/[a-z]/.test(pwd)) {
-    fail("passid-err", "Password needs at least 1 lowercase letter.", frm.passid);
-  } else if (!/[0-9]/.test(pwd)) {
-    fail("passid-err", "Password needs at least 1 number.", frm.passid);
-  } else if (!/[!@#%^&*()\-_+=\/><.,`~]/.test(pwd)) {
-    fail("passid-err", "Password needs at least 1 special character (!@#%^&*...).", frm.passid);
-  } else if (/"/.test(pwd)) {
-    fail("passid-err", "Password cannot contain quotation marks.", frm.passid);
-  } else if (uid && pwd.toLowerCase().indexOf(uid) !== -1) {
-    fail("passid-err", "Password cannot contain your User ID.", frm.passid);
-  }
-
-  /* ── Password match ── */
-  if (!pwd2) {
-    fail("passid2-err", "Please re-enter your password.", frm.passid2);
-  } else if (pwd !== pwd2) {
-    fail("passid2-err", "Passwords do not match.", frm.passid2);
-  }
-
-  /* If invalid, trigger review panel to show errors, block submission */
-  if (!valid) {
-    showReview();
-    return false;
-  }
-
-  return true; /* all valid — submit to thankyou.html */
-}
-
-/* ── Helper: get selected radio value ── */
-function getRadioValue(groupName) {
-  var radios = document.getElementsByName(groupName);
-  for (var i = 0; i < radios.length; i++) {
-    if (radios[i].checked) { return radios[i].value; }
-  }
-  return "";
-}
-
-/* ================================================================
-   END OF VALIDATION.JS  (HW2)
-   ================================================================ */
+</script>
+<!-- ================================================================
+     END OF DOCUMENT: patient-form.html  (HW2)
+     ================================================================ -->
+</body>
+</html>
