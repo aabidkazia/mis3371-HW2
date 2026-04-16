@@ -3,213 +3,246 @@
   ============================================================
   patient-form.html (HW2)
 
-  Author: honestly still me lol
+  Author: [Your Name]
   Created: March 27, 2026
-  Last updated: kinda forgot to update this but should be same day
+  Last Updated: March 27, 2026
 
   Description:
-  This is the patient registration form for We'R'Docs.
-  Basically expanded from HW1.
+  Patient registration form for We'R'Docs Medical Center.
+  This builds on HW1 with added validation and interactivity.
 
-  Stuff I added:
-  - pattern validation for most inputs
-  - little tooltips (title attr) so user knows what to do
-  - password strength checker (JS)
-  - sliders for health + salary (honestly kinda fun)
-  - review button (shows info without refreshing page)
-  - user id auto-lowercase (so it's consistent)
+  Main additions:
+  - HTML5 pattern validation for inputs
+  - Helpful title tooltips
+  - Password strength + match checking
+  - Sliders (health + salary) with live updates
+  - "Review" panel (no page reload)
+  - Auto lowercase conversion for user ID
 
-  Uses:
+  Files used:
   - style.css
   - validation.js
 
-  Note: might come back and clean this later if I have time
+  Note:
+  Tried to keep things readable and user-friendly.
+  Might still tweak styling later if needed.
   ============================================================
 -->
 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>We'R'Docs Medical - Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We'R'Docs Medical – New Patient Registration</title>
 
-  <!-- linking css + js -->
+  <!-- external files -->
   <link rel="stylesheet" href="style.css">
   <script src="validation.js"></script>
 </head>
 
 <body onload="initPage()">
 
-<!-- ===== HEADER / BANNER ===== -->
+<!-- ================= HEADER ================= -->
 <div id="banner">
   <h1>We'R'Docs Medical Center</h1>
   <p id="dynamic-date"></p>
-  <p>Caring for You - Body, Mind & Spirit</p>
+  <p class="tagline">Caring for You — Body, Mind & Spirit</p>
 </div>
 
 
 <div id="page-wrapper">
 
-<!-- ===== MAIN FORM ===== -->
+<!-- ================= FORM SECTION ================= -->
 <div id="main-content">
 
   <h2>New Patient Registration</h2>
+  <p class="form-intro">
+    Fields marked * are required. Hover over fields if you need help.
+  </p>
 
   <form id="patientForm" onsubmit="return handleSubmit()" novalidate>
 
-    <!-- --- PERSONAL INFO --- -->
+    <!-- ===== PERSONAL INFO ===== -->
     <fieldset>
-      <legend>Personal Info</legend>
+      <legend>Personal Information</legend>
 
-      <!-- Name row -->
+      <!-- Name (kept on one line for layout simplicity) -->
       <label>First Name *</label>
       <input type="text" id="fname"
+        maxlength="30"
         pattern="[A-Za-z'\-]{1,30}"
-        placeholder="First"
-        oninput="clearError('fname-err')">
+        title="Letters only (1–30 characters)"
+        oninput="clearError('fname-err')" required>
 
-      <!-- idk if MI really needed but assignment said include it -->
-      <input type="text" id="mi" maxlength="1" placeholder="M">
+      <label class="inline">MI</label>
+      <input type="text" id="mi" maxlength="1" size="2"
+        pattern="[A-Za-z]"
+        title="Optional middle initial">
 
-      <label>Last Name *</label>
+      <label class="inline">Last *</label>
       <input type="text" id="lname"
+        maxlength="30"
         pattern="[A-Za-z'\-0-9\s]{1,30}"
-        placeholder="Last">
+        required>
 
       <br><br>
 
       <!-- DOB -->
-      <label>DOB *</label>
-      <input type="date" id="dob">
+      <label>Date of Birth *</label>
+      <input type="date" id="dob" required>
 
       <br><br>
 
-      <!-- SSN (hidden) -->
+      <!-- SSN -->
       <label>SSN *</label>
       <input type="password" id="ssn"
         placeholder="XXX-XX-XXXX"
-        pattern="\d{3}-?\d{2}-?\d{4}">
+        pattern="\d{3}-?\d{2}-?\d{4}"
+        title="Format: XXX-XX-XXXX"
+        required>
     </fieldset>
 
 
-    <!-- --- CONTACT --- -->
+    <!-- ===== CONTACT ===== -->
     <fieldset>
-      <legend>Contact</legend>
+      <legend>Contact Information</legend>
 
       <label>Email *</label>
       <input type="text" id="email"
-        placeholder="name@email.com"
-        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+        placeholder="name@domain.com"
+        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+        required>
 
       <br><br>
 
       <label>Phone *</label>
       <input type="text" id="phone"
         placeholder="713-555-1234"
-        pattern="\d{3}-\d{3}-\d{4}">
+        pattern="\d{3}-\d{3}-\d{4}"
+        required>
     </fieldset>
 
 
-    <!-- --- ADDRESS --- -->
+    <!-- ===== ADDRESS ===== -->
     <fieldset>
       <legend>Address</legend>
 
-      <input type="text" id="addr1" placeholder="Street address">
-      <input type="text" id="addr2" placeholder="Apt (optional)">
+      <input type="text" id="addr1"
+        placeholder="Street address"
+        minlength="2"
+        required>
+
+      <input type="text" id="addr2"
+        placeholder="Apt / Unit (optional)"
+        minlength="2">
 
       <br><br>
 
-      <input type="text" id="city" placeholder="City">
-      
-      <!-- state dropdown (yeah this is long but whatever) -->
-      <select id="state">
+      <input type="text" id="city"
+        placeholder="City"
+        pattern="[A-Za-z\s\-\.]{2,30}"
+        required>
+
+      <!-- kept dropdown shorter for readability -->
+      <select id="state" required>
         <option value="">State</option>
         <option value="TX" selected>TX</option>
         <option value="CA">CA</option>
         <option value="NY">NY</option>
-        <!-- skipping rest for sanity -->
+        <option value="FL">FL</option>
+        <!-- could add all states, just trimmed for now -->
       </select>
 
-      <input type="text" id="zip" placeholder="ZIP">
+      <input type="text" id="zip"
+        placeholder="ZIP"
+        pattern="\d{5}(-\d{4})?"
+        required>
     </fieldset>
 
 
-    <!-- --- HEALTH / PREFS --- -->
+    <!-- ===== HEALTH / PREFERENCES ===== -->
     <fieldset>
-      <legend>Health Stuff</legend>
+      <legend>Health & Preferences</legend>
 
-      <!-- checkboxes -->
-      <p>Medical history:</p>
+      <!-- medical history -->
+      <p class="section-note">Medical history (check all that apply):</p>
 
       <label><input type="checkbox"> Chicken Pox</label>
       <label><input type="checkbox"> Measles</label>
       <label><input type="checkbox"> COVID-19</label>
+      <label><input type="checkbox"> Flu Shot</label>
 
       <br><br>
 
-      <!-- radio buttons -->
+      <!-- radios -->
       <p>Gender *</p>
-      <label><input type="radio" name="gender"> Male</label>
+      <label><input type="radio" name="gender" required> Male</label>
       <label><input type="radio" name="gender"> Female</label>
+      <label><input type="radio" name="gender"> Prefer not to say</label>
 
       <br><br>
 
-      <!-- slider (health) -->
-      <label>Health (1-10)</label>
-      <input type="range" id="healthScore" min="1" max="10" value="5"
+      <!-- slider: health -->
+      <label>Overall Health (1–10)</label><br>
+      <input type="range" id="healthScore"
+        min="1" max="10" value="5"
         oninput="updateSlider('healthScore','healthVal')">
       <span id="healthVal">5</span>
 
       <br><br>
 
-      <!-- salary slider -->
-      <label>Desired Salary</label>
-      <input type="range" id="salaryBar" min="20000" max="200000" step="5000"
+      <!-- slider: salary -->
+      <label>Desired Salary</label><br>
+      <input type="range" id="salaryBar"
+        min="20000" max="200000" step="5000"
         oninput="updateSalarySlider()">
       <span id="salaryVal">$60,000</span>
 
       <br><br>
 
       <!-- textarea -->
-      <textarea id="symptoms" rows="4"
-        placeholder="Describe symptoms (optional)"></textarea>
+      <textarea id="symptoms" rows="5"
+        placeholder="Describe symptoms (optional — avoid quotes)"></textarea>
     </fieldset>
 
 
-    <!-- --- ACCOUNT --- -->
+    <!-- ===== ACCOUNT ===== -->
     <fieldset>
-      <legend>Account</legend>
+      <legend>Account Credentials</legend>
 
       <label>User ID *</label>
       <input type="text" id="userid"
-        onblur="convertLowercase()">
+        pattern="[A-Za-z][A-Za-z0-9_\-]{4,29}"
+        onblur="convertLowercase()"
+        required>
 
       <br><br>
 
       <!-- password -->
       <label>Password *</label>
       <input type="password" id="passid"
-        oninput="checkPasswordStrength()">
+        oninput="checkPasswordStrength()"
+        required>
 
       <div id="strength-bar"></div>
+      <small id="strength-label"></small>
 
       <br>
 
       <!-- confirm -->
       <label>Confirm Password *</label>
       <input type="password" id="passid2"
-        oninput="checkPasswordMatch()">
+        oninput="checkPasswordMatch()"
+        required>
+
+      <small id="match-label"></small>
     </fieldset>
 
 
-    <!-- buttons -->
-    <div>
-      <!-- review doesn't submit -->
+    <!-- ===== BUTTONS ===== -->
+    <div id="form-buttons">
       <button type="button" onclick="showReview()">Review</button>
-
-      <!-- reset everything -->
-      <button type="reset">Reset</button>
-
-      <!-- submit -->
+      <button type="reset" onclick="clearReview()">Reset</button>
       <button type="submit">Submit</button>
     </div>
 
@@ -217,56 +250,54 @@
 </div>
 
 
-<!-- ===== REVIEW PANEL ===== -->
+<!-- ================= REVIEW PANEL ================= -->
 <div id="review-panel">
-  <h3>Review Info</h3>
+  <h3>Review Your Information</h3>
   <p id="review-body">
-    click review to see your info here
+    Click "Review" to see your entered information here before submitting.
   </p>
 </div>
 
 </div>
 
 
-<!-- ===== FOOTER ===== -->
+<!-- ================= FOOTER ================= -->
 <div id="footer">
-  <p>We'R'Docs Medical</p>
+  <p>We'R'Docs Medical Center</p>
 
-  <!-- quick contact button -->
-  <button onclick="alert('Call 713-555-9100')">
-    Contact
+  <button onclick="alert('Phone: (713) 555-9100\nEmail: info@werdocs.com')">
+    Contact Us
   </button>
 
   <p>© <span id="footer-year"></span></p>
 </div>
 
 
-<!-- ===== SIMPLE JS (kept inline cause easier tbh) ===== -->
+<!-- ================= INLINE JS ================= -->
 <script>
 function initPage() {
 
-  // dynamic date (this took longer than expected tbh)
-  var now = new Date();
-
+  // display today's date in a readable format
+  var today = new Date();
   document.getElementById("dynamic-date").innerHTML =
-    "Today: " + now.toDateString();
+    "Today is: " + today.toDateString();
 
-  document.getElementById("footer-year").innerText =
-    now.getFullYear();
+  // update footer year (so I don't have to keep changing it)
+  document.getElementById("footer-year").textContent =
+    today.getFullYear();
 
-  // DOB limits (120 yrs back)
-  var max = now.toISOString().split("T")[0];
+  // set DOB limits (max = today, min = 120 years ago)
+  var maxDate = today.toISOString().split("T")[0];
 
-  var minDate = new Date();
-  minDate.setFullYear(now.getFullYear() - 120);
+  var minDateObj = new Date();
+  minDateObj.setFullYear(today.getFullYear() - 120);
+  var minDate = minDateObj.toISOString().split("T")[0];
 
-  var min = minDate.toISOString().split("T")[0];
+  var dobField = document.getElementById("dob");
+  dobField.setAttribute("max", maxDate);
+  dobField.setAttribute("min", minDate);
 
-  var dobInput = document.getElementById("dob");
-  dobInput.setAttribute("max", max);
-  dobInput.setAttribute("min", min);
-
-  // might refactor this later into validation.js
+  // could probably move this into validation.js later
 }
 </script>
 
